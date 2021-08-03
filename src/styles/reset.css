@@ -34,13 +34,13 @@ li {
 #app {
     overflow: hidden;
 }
-.el-tabs {
-    height: 100%;
-}
-.el-tabs__content {
-    height: calc(100% - 55px);
-    overflow: auto;
-}
+/*.el-tabs {*/
+/*    height: 100%;*/
+/*}*/
+/*.el-tabs__content {*/
+/*    height: calc(100% - 55px);*/
+/*    overflow: auto;*/
+/*}*/
 .el-tabs__nav-scroll {
     padding-left: 0px;
 }

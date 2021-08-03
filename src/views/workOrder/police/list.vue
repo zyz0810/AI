@@ -37,9 +37,9 @@
     </div>
     <div class="p20 bg_white">
       <div class="mb_10">
-        <el-button type="primary" icon="iconfont icon-daochu1" @click="handleCreate">导出信息</el-button>
-        <el-button type="primary" plain icon="iconfont icon-xiazai" @click="handleCreate">下载图片</el-button>
-        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'">切换 </div>
+        <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
+        <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
+        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
