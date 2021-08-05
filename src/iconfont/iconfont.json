@@ -3,8 +3,22 @@
   "name": "AI",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
-  "description": "",
+  "description": "滨江 -- AI",
   "glyphs": [
+    {
+      "icon_id": "16479798",
+      "name": "行政管理",
+      "font_class": "hangzhengguanli",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "23257760",
+      "name": "监测",
+      "font_class": "jiance",
+      "unicode": "f8a8",
+      "unicode_decimal": 63656
+    },
     {
       "icon_id": "2883559",
       "name": "星星",

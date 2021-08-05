@@ -63,7 +63,7 @@
             <img :src="headImg" class="user-avatar" />
             <span style="margin: 0 5px; font-size: 14px; display: inline-block;">{{name}}</span>
           </div>
-          <div class="ml_20 clr_white" @click="logout"><i class="el-icon-switch-button bold f30" style="margin-left: 5px"></i></div>
+          <div class="ml_20 clr_white" @click="logout"><i class="el-icon-switch-button bold f20" style="margin-left: 5px"></i></div>
         </div>
         <my-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="80%">
           <ul class="street">
@@ -378,8 +378,8 @@ export default {
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 30px;
+          height: 30px;
           border-radius: 10px;
         }
 

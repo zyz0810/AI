@@ -92,7 +92,7 @@ export const asyncRoutes = [
     // name: '实时监测',
     meta: {
       // title: '实时监测',
-      icon: 'iconfont icon-xiangqing',
+      icon: 'iconfont icon-hangzhengguanli',
       roles: ['admin'],
     },
     children: [
@@ -114,7 +114,7 @@ export const asyncRoutes = [
     // name: '预警审核',
     meta: {
       // title: '预警审核',
-      icon: 'iconfont icon-xiangqing',
+      icon: 'iconfont icon-jiance',
       roles: [
         'admin',
       ]

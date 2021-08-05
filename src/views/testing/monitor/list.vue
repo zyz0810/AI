@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="flex" style=" align-items:stretch;">
-      <el-tabs type="card" v-model="activeName" style="width: 80%; height: 787px;margin-right: 10px;">
+      <el-tabs type="card" v-model="activeName" style="flex:1;height: 787px;margin-right: 10px;">
         <el-tab-pane label="地图展示" name="first">
           <div id='mapDiv' class="mapDiv"></div>
           <div class="map_info f14 text-center">
@@ -11,7 +11,7 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-      <el-tabs type="card" v-model="activeName">
+      <el-tabs type="card" v-model="activeName" style="width: 360px;">
         <el-tab-pane label="最新事件" name="first">
           <ul class="img_list w100 bg_white">
             <li v-for="(item,index) in list" :key="index" class="mb_20">
@@ -29,9 +29,7 @@
           </ul>
         </el-tab-pane>
       </el-tabs>
-
     </div>
-
   </div>
 </template>
 
