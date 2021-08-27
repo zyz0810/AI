@@ -3,7 +3,7 @@ import Qs from 'qs'
 export function login(data) {
   return request({
     // url: 'api-auth/oauth/platform/login',
-    url: 'api/login/index',
+    url: '/api/login/index',
     method: 'post',
     // data
     data: Qs.stringify(data)
@@ -15,7 +15,7 @@ export function login(data) {
  */
 export function logout(data) {
   return request({
-    url: 'api/user/logout',
+    url: '/api/user/logout',
     // url: 'api/logout',
     method: 'post',
     data: Qs.stringify(data)
@@ -56,7 +56,7 @@ export function logout(data) {
  */
 export function userList(data) {
   return request({
-    url:'api/user/userList',
+    url:'/api/user/userList',
     method: 'post',
     data: Qs.stringify(data)
   })
@@ -66,7 +66,7 @@ export function userList(data) {
  */
 export function userDetail(data) {
   return request({
-    url:'api/user/userDetail',
+    url:'/api/user/userDetail',
     method: 'post',
     data: Qs.stringify(data)
   })
@@ -84,7 +84,7 @@ export function userDetail(data) {
  */
 export function addUser(data) {
   return request({
-    url:'api/user/addUser',
+    url:'/api/user/addUser',
     method: 'post',
     data: Qs.stringify(data)
   })
@@ -96,7 +96,7 @@ export function addUser(data) {
  */
 export function editUser(data) {
   return request({
-    url:'api/user/editUser',
+    url:'/api/user/editUser',
     method: 'post',
     data: Qs.stringify(data)
   })
@@ -108,7 +108,7 @@ export function editUser(data) {
  */
 export function resetPassword(data) {
   return request({
-    url:'api-user/users/resetPassword',
+    url:'/api-user/users/resetPassword',
     method: 'post',
     data: Qs.stringify(data)
   })
@@ -120,7 +120,7 @@ export function resetPassword(data) {
  */
 export function deleteSysUser(data) {
   return request({
-    url:'api-user/users/deleteSysUser',
+    url:'/api-user/users/deleteSysUser',
     method: 'post',
     data: Qs.stringify(data)
   })
