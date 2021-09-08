@@ -14,8 +14,8 @@ const state = {
   roles: [],
   id:undefined,
   admin_mobile:'',
-  city:[],
-  citySelected:'',
+  // city:[],
+  // citySelected:'',
 }
 
 const mutations = {
@@ -37,12 +37,12 @@ const mutations = {
   SET_MOBILE: (state, admin_mobile) => {
     state.admin_mobile = admin_mobile
   },
-  SET_CITY: (state, city) => {
-    state.city = city
-  },
-  SET_CITYSELECTED: (state, citySelected) => {
-    state.citySelected = citySelected
-  },
+  // SET_CITY: (state, city) => {
+  //   state.city = city
+  // },
+  // SET_CITYSELECTED: (state, citySelected) => {
+  //   state.citySelected = citySelected
+  // },
 }
 
 const actions = {
@@ -55,12 +55,12 @@ const actions = {
         // token_type  access_token
         commit('SET_TOKEN', data.access_token);
         // commit('SET_ID', response.data.id);
-        console.log(response.data.city_list);
-        commit('SET_CITY', response.data.city_list);
-        commit('SET_CITYSELECTED', response.data.city_list[0].id);
+        // console.log(response.data.city_list);
+        // commit('SET_CITY', response.data.city_list);
+        // commit('SET_CITYSELECTED', response.data.city_list[0].id);
 
-        setCity(response.data.city_list);
-        setCitySelected(response.data.city_list[0].id);
+        // setCity(response.data.city_list);
+        // setCitySelected(response.data.city_list[0].id);
         // setId(response.data.id);
         // setName(response.data.name);
         setToken(data.access_token);
@@ -137,10 +137,10 @@ const actions = {
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
         commit('SET_MOBILE', '');
-        commit('SET_CITY', []);
-        commit('SET_CITYSELECTED', '');
-        removeCitySelected();
-        removeCity();
+        // commit('SET_CITY', []);
+        // commit('SET_CITYSELECTED', '');
+        // removeCitySelected();
+        // removeCity();
         removeToken();
         sessionStorage.setItem("Admin-Token", '');
         resetRouter();
@@ -157,10 +157,10 @@ const actions = {
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
         commit('SET_MOBILE', '');
-        commit('SET_CITY', []);
+        // commit('SET_CITY', []);
         removeToken();
-        removeCitySelected();
-        removeCity();
+        // removeCitySelected();
+        // removeCity();
         sessionStorage.setItem("Admin-Token", '');
         resetRouter();
         // removeId();
@@ -178,10 +178,10 @@ const actions = {
       commit('SET_ROLES', []);
       // commit('SET_ID', '');
       commit('SET_NAME', '');
-      commit('SET_CITY', []);
+      // commit('SET_CITY', []);
       removeToken();
-      removeCity();
-      removeCitySelected();
+      // removeCity();
+      // removeCitySelected();
       sessionStorage.setItem("Admin-Token", '');
       // removeId();
       removeName();

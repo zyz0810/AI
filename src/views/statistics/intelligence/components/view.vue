@@ -1,210 +1,284 @@
 <template>
-  <myDialog
-    :visible.sync="showViewDialog"
-    :close-on-click-modal="false"
-    width="80%"
-    @close="close"
-    top="10vh"
-    title="查看明细"
-    class="dialogContainer"
-    @open="open"
-  >
-    <div class="filter-container">
-      <div class="flex" v-if="operatingMode!=2">
-        <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">新增</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="success" icon="el-icon-edit" :disabled="updateBtn" @click="handleUpdate">编辑</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="danger" :disabled="updateBtn" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-      </div>
+  <div class="app-container">
+
+    <div class="warning_tab f16 bold">
+      <span :class="['inlineBlock', tabIndex == 0?'active clr_white':'']" @click="tabIndex = 0">现场图片</span>
+      <span :class="['inlineBlock', tabIndex == 1?'active clr_white':'']" @click="tabIndex = 1">视频回放</span>
+      <span :class="['inlineBlock', tabIndex == 2?'active clr_white':'']" @click="clickVideo">查看监控</span>
     </div>
-    <div class="f14">参数名：{{name}}</div>
-    <div class="f14" v-if="operatingMode!=2">参数值：</div>
-
-    <el-table v-loading="listLoading" :data="list" :header-cell-style="{background:'#f5f7fa'}" element-loading-text="拼命加载中" border fit highlight-current-row ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange" v-if="operatingMode!=2">
-      <el-table-column type="selection" width="40" align="center" ></el-table-column>
-      <el-table-column label="名称" align="center" prop="name"></el-table-column>
-      <el-table-column label="创建人" align="center" prop="createUserName"></el-table-column>
-      <el-table-column label="创建时间" align="center">
-        <template slot-scope="scope">
-          <span>{{$moment(scope.row.createTime).format('YYYY-MM-DD HH:mm:ss')}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="最后修改人" align="center" prop="updateUserName"></el-table-column>
-      <el-table-column label="最后修改时间" align="center">
-        <template slot-scope="scope">
-          <span>{{$moment(scope.row.updateTime).format('YYYY-MM-DD HH:mm:ss')}}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                @pagination="getList" class="text-right" v-if="operatingMode!=2"/>
-    <myDialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :append-to-body="true">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px" style="width: 400px; margin-left:50px;">
-
-        <el-form-item label="参数名称" prop="name">
-          <el-input v-model.trim="name" placeholder="请输入规格名称" autocomplete="off" :disabled="true" clearable/>
-        </el-form-item>
-        <el-form-item label="参数值" prop="name">
-          <el-input v-model.trim="temp.name" placeholder="请输入规格值" autocomplete="off" clearable/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <!--<el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>-->
-        <!--<el-button type="primary" @click="handleAdd()">确 定</el-button>-->
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData(updateId)" :loading="paraLoading">确 定</el-button>
+    <div class="cont">
+      <div class="mt_20">
+        <ul class="img_list flex" v-show="tabIndex == 0">
+          <li v-for="(item,index) in imgList" :key="index">
+            <div class="img_list_top clr_white">
+              <img class="img_list_img" :src="item.image">
+              <span class="block f15 type_tag">{{item.type | filtersType}}</span>
+              <p class="f15 time">{{item.time}}</p>
+            </div>
+          </li>
+        </ul>
+        <ul class="img_list flex video_list" v-show="tabIndex == 1">
+          <li v-for="(item,index) in videoList" :key="index">
+            <div class="img_list_top clr_white">
+              <img class="img_list_img" :src="item.image">
+              <p class="f15 name">
+                <span>设备名称：ST1241</span>
+                <span>位置信息：滨和路152号</span>
+              </p>
+              <p class="f15 time">2020-12-18 21:12:09</p>
+            </div>
+          </li>
+        </ul>
       </div>
-    </myDialog>
+     <div class="flex">
+       <div style="width: 70%;">
+         <p class="f20 bold mt_20 mb_10">人工审核信息</p>
+         <div class="bg_white p20">
+           <el-form ref="dataForm" :inline="true" :rules="rules" :model="temp" label-width="120px">
+             <el-form-item label="问题类型" prop="city_id">{{formData.intelligent_type_name}}</el-form-item>
+             <el-form-item label="上报时间" prop="city_id">{{formData.create_time}}</el-form-item>
+             <el-form-item label="来源设备" prop="city_id">{{formData.camera_name}}</el-form-item>
+           </el-form>
+           <el-form ref="dataForm" :rules="rules" :model="temp" label-width="120px">
+             <el-form-item label="审核意见" prop="city_id">
+               <el-radio-group v-model="temp.radio">
+                 <el-radio :label="3">通过</el-radio>
+                 <el-radio :label="6">不通过</el-radio>
+               </el-radio-group>
+             </el-form-item>
+             <el-form-item label="违规类型" prop="city_id">
+               <el-select v-model="temp.city_id" placeholder="选择辖区">
+                 <el-option v-for="option in cityList" :label="option.province+option.city+option.area" :value="option.id" :key="option.id"></el-option>
+               </el-select>
+             </el-form-item>
 
 
-  </myDialog>
+             <el-form-item label="报警点位">
+               {{formData.install_place}}
+<!--               <el-input v-model.trim="temp.product" placeholder="请输入报警点位" autocomplete="off" suffix-icon="el-icon-search" clearable/>-->
+             </el-form-item>
+             <el-form-item label="中队" prop="city_id">
+               <el-select v-model="temp.city_id" placeholder="选择中队" :disabled="true">
+                 <el-option v-for="option in cityList" :label="option.province+option.city+option.area" :value="option.id" :key="option.id"></el-option>
+               </el-select>
+             </el-form-item>
+             <el-form-item label="网格" prop="city_id">
+               <el-select v-model="temp.city_id" placeholder="选择网格" :disabled="true">
+                 <el-option v-for="option in cityList" :label="option.province+option.city+option.area" :value="option.id" :key="option.id"></el-option>
+               </el-select>
+             </el-form-item>
+             <el-form-item label="备注" prop="name">
+               <el-input v-model.trim="temp.name" placeholder="请输入备注" type="textarea" autocomplete="off" clearable/>
+             </el-form-item>
+             <el-form-item label="事件等级" prop="city_id">
+               <el-radio-group v-model="temp.radio">
+                 <el-radio :label="3">通过</el-radio>
+                 <el-radio :label="6">不通过</el-radio>
+               </el-radio-group>
+             </el-form-item>
+             <el-form-item label="" prop="city_id">
+               <el-checkbox v-model="temp.checked">事件去重</el-checkbox>
+               <el-button v-waves type="primary" class="ml_20" @click="handleRepeat">重复事件（2）</el-button>
+             </el-form-item>
+           </el-form>
+           <div class="text-center mt_20 mb_20">
+             <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()" :loading="paraLoading">审核</el-button>
+             <el-button type="primary" plain>上一条</el-button>
+             <el-button type="primary" plain>下一条</el-button>checked
+           </div>
+         </div>
+       </div>
+       <div class="" style="width: 28%;margin-left: 2%">
+         <p class="f20 bold mt_20 mb_10">位置信息</p>
+         <div id='mapDiv' class="mapDiv" style=" height: 500px"></div>
+       </div>
+     </div>
+    </div>
+
+    <repeatView :showDialog.sync="showViewDialog" :repeatData="repeatData"></repeatView>
+    <videoView :showDialog.sync="showVideoDialog" :videoData="videoData"></videoView>
+
+  </div>
 </template>
 
 <script>
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {collectDetail} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
+  import SingleImage from "@/components/Upload/SingleImage.vue";
+  import {cityList} from "@/api/jurisdiction";
+  import {userDetail} from "@/api/user"; // waves directive
+  import repeatView from './repeatView'
+  import videoView from './videotView'
+  import point01 from "@/assets/image/point01.png";
+  import point02 from "@/assets/image/point02.png";
+  import point03 from "@/assets/image/point03.png";
+  import point04 from "@/assets/image/point04.png";
+  import point05 from "@/assets/image/point05.png";
   export default {
     name: 'parameterView',
     directives: { waves },
     components: {
       draggable,
-      Pagination
-    },
-    props: {
-      showDialog: {
-        required: true,
-        type: Boolean,
-        default: false
-      },
-      paraData: {
-        required: true,
-        type: Object,
-        default: {
-          option: {},
-          operatorType: "view",
-          id: ""
-        }
-      }
+      Pagination,
+      SingleImage,
+      repeatView,
+      videoView
     },
     data() {
       return {
+        repeatData:{},
+        videoData:{},
+        map: '', // 对象
+        zoom: 12, // 地图的初始化级别，及放大比例
+        centerLatitude:'30.20835',//中心纬度
+        centerLongitude:'120.21194',//中心经度
+        showVideoDialog:false,
+        showViewDialog:false,
+        videoList: [{
+          num:'AJ5551521133222',
+          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
+          type:1,
+          time:'2021-8-9 23:22:01',
+          address:'文一路300号',
+          source:1,
+          name:'ST123456',
+          status:1
+        }],
+        imgList: [{
+        num:'AJ5551521133222',
+        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
+        type:1,
+        time:'2021-8-9 23:22:01',
+        address:'文一路300号',
+        source:1,
+        name:'ST123456',
+        status:1
+      },{
+        num:'AJ3542221133222',
+        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
+        type:0,
+        time:'2021-6-12 13:22:01',
+        address:'文一路356号',
+        source:0,
+        name:'ST1234312',
+        status:0
+      },{
+        num:'AJ3542221133222',
+        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
+        type:2,
+        time:'2021-6-12 13:22:01',
+        address:'文一路356号',
+        source:0,
+        name:'ST1234312',
+        status:0
+      },],
+        formData:{
+          intelligent_type_name:'',
+          create_time:'',
+          camera_name:'',
+          latitude:'',
+          longitude:'',
+          install_place:'',
+          pic_url:'',
+        },
+        tabIndex:0,
+        dialogStatus:'',
         paraLoading:false,
-        operatingMode:'',
-        updateBtn:true,
-        total:0,
-        specificationsItem:[''],
-        list: null,
-        listLoading: false,
-        listQuery:{
-          parameterId:'',
-          page:1,
-          limit:10
-        },
-        updateId:undefined,
-        dialogFormVisible: false,
+        cityList:[],
         temp: {
+          product:'',
+          city_id:'',
           name:'',
-          parameterId:undefined,
-          deleted:0
+          version: '',
+          facility_no:'',
+          imei:'',
+          start_time:'',
+          images:'',
+          remark:''
         },
-        textMap: {
-          update: '编辑规格信息',
-          create: '新增规格信息'
-        },
-        dialogStatus: '',
         rules: {
-          name: [{ required: true, message: '请输入名称', trigger: 'change' }],
+          name: [{ required: true, message: '请输入设备名称', trigger: 'change' }],
+          version: [{ required: true, message: '请输入设备型号', trigger: 'change' }],
+          facility_no: [{ required: true, message: '请输入设备编号', trigger: 'change' }],
+          imei: [{ required: true, message: '请输入设备IMEI', trigger: 'change' }],
+          start_time: [{ required: true, message: '请选择安装日期', trigger: 'change' }],
+          images: [{ required: true, message: '请上传安装照片', trigger: 'change' }],
+          product: [{ required: true, message: '请输入生产地', trigger: 'change' }],
         },
-        name:''
       }
     },
-    computed: {
-      showViewDialog: {
-        get() {
-          return this.showDialog;
-        },
-        set(value) {
-          this.$emit("update:show-dialog", value);
-        }
-      },
-    },
-    filters:{
-      filtersStatus: function(value) {
-        let StatusArr = {0:'禁用', 1:'启用'}
+
+    filters: {
+      filtersStatus: function (value) {
+        let StatusArr = {0: '未审核', 1: '已审核'}
         return StatusArr[value]
-      }
+      },
+      filtersType: function (value) {
+        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+        return StatusArr[value]
+      },
+      filtersSource: function (value) {
+        let StatusArr = {0: '其它', 1: '滨康二区',}
+        return StatusArr[value]
+      },
     },
     mounted() {
-
+      this.onLoad()
+      this.getView();
     },
     methods: {
-      open(){
-        this.listQuery.parameterId = this.paraData.id
-        this.operatingMode = this.paraData.option.operatingMode
-        this.getList();
-        this.name = this.paraData.option.name
+      onLoad() {
+        let T = window.T
+        this.map = new T.Map('mapDiv')
+        this.map.centerAndZoom(new T.LngLat(this.centerLongitude, this.centerLatitude), this.zoom) // 设置显示地图的中心点和级别
+        // // 普通标注
+        document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
       },
-      close(){},
-      getList(){
-        paraValueList(this.listQuery).then(res=>{
-          this.list = res.data.data;
-          this.total = res.data.count
+      mapPoint(){
+        //创建图片对象
+        this.map.clearOverLays();
+        let point = new T.LngLat(this.formData.longitude, this.formData.latitude);
+        let marker =  new T.Marker(point);
+        this.map.addOverLay(marker);
+      },
+      clickVideo(){
+        this.showVideoDialog = true
+      },
+      handleRepeat(row){
+        this.showViewDialog = true
+        this.repeatData = {
+          id:row.id
+        }
+      },
+      getCity(){
+        cityList({page:1,pageSize:9999,}).then(res=>{
+          this.cityList = res.data.data;
         });
       },
-      clickRow(row){
-        this.$refs.tableList.toggleRowSelection(row)
-      },
-      handleSelectionChange(val) {
-        this.rowInfo = val;
-        if(val.length > 1){
-          this.updateBtn = true
-          this.deleteBtn = true
-        }else if(val.length == 1){
-          this.updateBtn = false
-          this.deleteBtn = false
-        }else{
-          this.updateBtn = true
-          this.deleteBtn = true
-        }
+      getView(){
+        collectDetail({id:this.$route.query.id}).then(res=>{
+          const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url} = res.data
+          this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url}
+          this.mapPoint();
+        });
       },
 
-      resetTemp() {
-        this.temp = {
-          // parameterId:undefined,
-          name:'',
-          parameterId:undefined,
-          deleted:0
-          // orders:'',
-          // isSystem:1,
-        }
-      },
-
-      handleCreate() {
-        this.resetTemp();
-        this.dialogStatus = 'create';
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      },
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.paraLoading = true
-            this.temp.parameterId = this.paraData.id
-            paraValueSave(this.temp).then((res) => {
+            console.log( this.temp)
+            addFacility(this.temp).then((res) => {
               setTimeout(()=>{
                 this.paraLoading = false
               },1000)
-              if(res.resp_code == 0) {
-                this.getList();
-                // this.list.unshift(res.data);
-                this.dialogFormVisible = false;
-                // debugger
-                this.getList();
+              if(res.code == 1) {
+                this.$emit('insertList');
+                this.showViewDialog = false;
                 this.$message({
-                  message: '增加成功',
+                  message: res.message,
                   type: 'success'
                 });
               }
@@ -214,32 +288,20 @@
           }
         })
       },
-      handleUpdate(row) {
-        this.temp = Object.assign({}, this.rowInfo[0]); // copy obj
-        this.dialogStatus = 'update';
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      },
+
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.paraLoading = true
-            const tempData = Object.assign({}, this.temp);
-            this.$delete(tempData,'createTime')
-            this.$delete(tempData,'updateTime')
-            paraValueUpdate(tempData).then((res) => {
+            editFacility(this.temp).then((res) => {
               setTimeout(()=>{
                 this.paraLoading = false
               },1000)
-              if(res.resp_code == 0) {
-                // const index = this.list.findIndex(v => v.id === this.temp.id);
-                // this.list.splice(index, 1, res.data);
-                this.getList();
-                this.dialogFormVisible = false;
+              if(res.code == 1) {
+                this.$emit('insertList');
+                this.showViewDialog = false;
                 this.$message({
-                  message: '修改成功',
+                  message: res.message,
                   type: 'success'
                 });
               }
@@ -249,31 +311,24 @@
           }
         })
       },
-      handleDelete(row, index) {
-        this.$confirm('确定删除此记录吗?', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = {id: this.rowInfo[0].id};
-          paraValueDelete(para).then((res) => {
-            this.listLoading = false;
-            if(res.resp_code == 0) {
-              this.getList();
-              //NProgress.done();
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              });
-            }
-          });
-        }).catch(() => {
-
-        });
-      },
-
-
 
     }
   }
 </script>
+<style lang="scss" scoped>
+  .cont{
+    /*height: calc(100vh - 86px);*/
+    height: 750px;
+    overflow: auto;
+  }
+  .warning_tab{
+    span{
+      padding: 10px 15px;
+    }
+    .active{
+      border-radius: 5px;
+      background: rgba(64,158,255,1);
+    }
+  }
+
+</style>

@@ -3,7 +3,7 @@ import Qs from 'qs'
 export function login(data) {
   return request({
     // url: 'api-auth/oauth/platform/login',
-    url: '/api/login/index',
+    url: '/admin/login/index',
     method: 'post',
     // data
     data: Qs.stringify(data)
@@ -15,7 +15,7 @@ export function login(data) {
  */
 export function logout(data) {
   return request({
-    url: '/api/user/logout',
+    url: '/admin/user/logout',
     // url: 'api/logout',
     method: 'post',
     data: Qs.stringify(data)

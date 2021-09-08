@@ -39,11 +39,32 @@ module.exports = {
     // before: require('./mock/mock-server.js'),
     proxy:{
       '/api':{
-        target:'http://yy.susongzhijia.com',
+        target:'http://erp.susongzhijia.com',
         changeOrigin: true,
-        pathRewrite:{
-          '^/api':'/api'
-        }
+        // pathRewrite:{
+        //   '^/api':'/api'
+        // }
+      },
+      '/admin':{
+        target:'http://erp.susongzhijia.com',
+        changeOrigin: true,
+        // pathRewrite:{
+        //   '/keynote/api':''
+        // }
+      },
+      '/job':{
+        target:'http://erp.susongzhijia.com',
+        changeOrigin: true,
+        // pathRewrite:{
+        //   '/keynote/api':''
+        // }
+      },
+      '/ai':{
+        target:'http://erp.susongzhijia.com',
+        changeOrigin: true,
+        // pathRewrite:{
+        //   '/keynote/api':''
+        // }
       }
     }
     // proxy:"http://139.224.233.152:18000",

@@ -32,12 +32,12 @@
             <!--<span class="bold" style="margin: 0 5px; font-size: 18px">{{name}}</span>-->
             <!--<i class="el-icon-caret-bottom" />-->
           <!--</div>-->
-          <el-select v-model="citySelected" placeholder="请选择" @change="chooseCity">
-            <el-option v-for="item in cityList" :label="item.province+item.city+item.area" :value="item.id">
-            </el-option>
-            <!--<el-option v-for="item in cityList" :label="item.mobile" :value="item.id" :key="item.id">-->
-            <!--</el-option>-->
-          </el-select>
+<!--          <el-select v-model="citySelected" placeholder="请选择" @change="chooseCity">-->
+<!--            <el-option v-for="item in cityList" :label="item.province+item.city+item.area" :value="item.id">-->
+<!--            </el-option>-->
+<!--            &lt;!&ndash;<el-option v-for="item in cityList" :label="item.mobile" :value="item.id" :key="item.id">&ndash;&gt;-->
+<!--            &lt;!&ndash;</el-option>&ndash;&gt;-->
+<!--          </el-select>-->
 
                     <!--<el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">-->
                       <!--<div class="avatar-wrapper">-->
@@ -63,7 +63,8 @@
             <img :src="headImg" class="user-avatar" />
             <span style="margin: 0 5px; font-size: 14px; display: inline-block;">{{name}}</span>
           </div>
-          <div class="ml_20 clr_white" @click="logout"><i class="el-icon-switch-button bold f20" style="margin-left: 5px"></i></div>
+<!--          <div class="ml_20 clr_white" @click="logout"><i class="el-icon-switch-button bold f20" style="margin-left: 5px"></i></div>-->
+          <a class="ml_20 clr_white" href="/jsc/index.html#/dashboard"><i class="el-icon-s-promotion bold f20" style="margin-left: 5px"></i> 回首页</a>
         </div>
         <my-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="80%">
           <ul class="street">
@@ -104,7 +105,7 @@ export default {
   name: 'topTitle',
   data() {
     return {
-      citySelected:Number(getCitySelected()),
+      // citySelected:Number(getCitySelected()),
       headImg: headImg,
       systemDate:'',
       // name:getName()!='null'?getName():'',
@@ -118,7 +119,7 @@ export default {
       temp:{
         oldPassword:''
       },
-      cityList:getCity(),
+      // cityList:getCity(),
       rules:{
         password: [
           { required: true, message: "请输入密码", trigger: "change" },{validator: isPassword}
@@ -157,16 +158,16 @@ export default {
       'sidebar',
       'avatar',
       'device',
-      'city'
+      // 'city'
     ])
   },
   methods: {
-    chooseCity(val){
-      this.citySelected = val;
-      setCitySelected(val);
-      console.log( getCity())
-     console.log( getCitySelected())
-    },
+    // chooseCity(val){
+    //   this.citySelected = val;
+    //   setCitySelected(val);
+    //   console.log( getCity())
+    //  console.log( getCitySelected())
+    // },
     updateCity(){},
     resetPasswordTemp(){
       this. passwordTemp={

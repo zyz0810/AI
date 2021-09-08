@@ -172,6 +172,19 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'intelligence/view',
+        hidden:true,
+        component: () => import('@/views/statistics/intelligence/components/view'),
+        name: '事件检索',
+        meta: {
+          title: '事件检索',
+          activeMenu: '/statistics/intelligence',
+          roles: [
+            'admin',
+          ]
+        }
+      },
+      {
         path: 'data',
         component: () => import('@/views/statistics/data/list'),
         name: 'dataList',

@@ -6,8 +6,8 @@
           <div id='mapDiv' class="mapDiv"></div>
           <div class="map_info f14 text-center">
             <p class="clr_white">图层管理</p>
-            <p><el-switch v-model="videoSwitch" active-color="#13ce66" class="mr_10"></el-switch>视频点位</p>
-            <p><el-switch v-model="videoSwitch2" active-color="#13ce66" class="mr_10"></el-switch>事件点位</p>
+            <p><el-switch v-model="videoSwitch" active-color="#13ce66" class="mr_10" @change="handelPoint"></el-switch>视频点位</p>
+            <p><el-switch v-model="videoSwitch2" active-color="#13ce66" class="mr_10" @change="handelCase"></el-switch>事件点位</p>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -30,17 +30,18 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <caseView :showDialog.sync="showViewDialog" :caseData="caseData"></caseView>
   </div>
 </template>
 
 <script>
   import echarts from 'echarts'
-  import {paraList, paraSave, paraUpdate, paraDelete} from '@/api/parameter'
+  import {pointList,} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
-  import paraView from "./components/view";
+  import caseView from "./components/view";
   import point01 from '@/assets/image/point01.png' // 引入刚才的map.js 注意路径
   import point02 from '@/assets/image/point02.png' // 引入刚才的map.js 注意路径
   import point03 from '@/assets/image/point03.png' // 引入刚才的map.js 注意路径
@@ -55,11 +56,14 @@
     components: {
       draggable,
       Pagination,
-      paraView,
+      caseView,
       LineChart
     },
     data() {
       return {
+        caseData:{},
+        pointList:[],
+        caseList:[],
         activeName:'first',
         videoSwitch:true,
         videoSwitch2:false,
@@ -100,7 +104,7 @@
           name:'ST1234312',
           status:0
         },],
-        showSearchDialog:false,
+        showViewDialog:false,
         showCompanyDialog:false,
         total:1,
         companyList: [{
@@ -155,14 +159,66 @@
       },
     },
     mounted() {
-      this.onLoad()
+      this.onLoad();
+      this.getPoint();
     },
     methods: {
+      handelPoint(val){
+        // caseList
+        // ：active-value得为true
+        // ：inactive-value得为false
+        // console.log(val)
+        // let flag = row.enabled; //保存点击之后v-modeld的值(true，false)
+        // row.enabled = !row.enabled; //保持switch点击前的状态
+        // let paras = {
+        //   id: row.id,
+        //   enabled: flag,
+        // };
+        if(val == true){
+          this.getPoint();
+        }else{
+          this.pointList = [];
+          this.mapPoint('point')
+        }
+
+      },
+      handelCase(val){
+        if(val == true){
+          this.getCase();
+        }else{
+          this.caseList = [];
+          this.mapPoint('case')
+        }
+
+        // caseList
+        // ：active-value得为true
+        // ：inactive-value得为false
+        // console.log(val)
+        // let flag = row.enabled; //保存点击之后v-modeld的值(true，false)
+        // row.enabled = !row.enabled; //保持switch点击前的状态
+        // let paras = {
+        //   id: row.id,
+        //   enabled: flag,
+        // };
+
+      },
       companyShow(){
 
       },
       handleFilter(){
 
+      },
+      getPoint(){
+        pointList({type:'allList'}).then(res=>{
+          this.pointList = res.data;
+          this.mapPoint('point')
+        });
+      },
+      getCase(){
+        pointList({type:'allList'}).then(res=>{
+          this.caseList = res.data;
+          this.mapPoint('case')
+        });
       },
       onLoad() {
         let T = window.T
@@ -170,24 +226,23 @@
         this.map.centerAndZoom(new T.LngLat(this.centerLongitude, this.centerLatitude), this.zoom) // 设置显示地图的中心点和级别
         // 添加地图类型控件
         // this.addCtrl()
-        // // 普通标注
-        let site = [
-          { lng: 117.283042, lat: 31.86119 },
-          { lng: 116.41238, lat: 40.07689 },
-          { lng: 116.34143, lat: 40.03403 },
-        ]
-        // this.markerPoint(site)
+        // this.map.setStyle('indigo');
+        document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
+
+      },
+      mapPoint(type){
         //创建图片对象
+        this.map.clearOverLays();
         var icon01 = new T.Icon({
           iconUrl: point05,
           iconSize: new T.Point(30, 51),
           iconAnchor: new T.Point(34, 59)
         });
-        // var icon02 = new T.Icon({
-        //   iconUrl: point02,
-        //   iconSize: new T.Point(66, 59),
-        //   iconAnchor: new T.Point(34, 59)
-        // });
+        var icon02 = new T.Icon({
+          iconUrl: point02,
+          iconSize: new T.Point(66, 59),
+          iconAnchor: new T.Point(34, 59)
+        });
         // var icon03 = new T.Icon({
         //   iconUrl: point03,
         //   iconSize: new T.Point(66, 59),
@@ -202,56 +257,89 @@
         // let marker = new T.Marker(new T.LngLat(117.283042, 31.86119));// 创建标注
         // let marker = new T.Marker(new T.LngLat(this.centerLongitude, this.centerLatitude), {icon: icon});// 创建标注
         // this.map.addOverLay(marker);
-        var infoWin1 = new T.InfoWindow();
-        let sContent =
-          '<ul class="img_list w100"><li> <div class="img_list_top clr_white">' +
-          '<img class="img_list_img" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg">' +
-          '<span class="block f15 type_tag">暴露垃圾</span>' +
-          ' <p class="f15 time">2021-05-05 21:10:50</p>' +
-          '</div>' +
-          '<div class="weui-cell f15">' +
-          '<div class="weui-cell__bd"> <p>报警点位：</p><p>滨江区195号</p></div>' +
-          '<div class="weui-cell__ft"> <span class="block ml_20 baseColor bold state_type">未审核</span> </div>' +
-          '</div>' +
-          '</li>' +
-          '</ul>';
-        infoWin1.setContent(sContent);
-        // 随机向地图添加25个标注
-        let bounds = this.map.getBounds();
-        let sw = bounds.getSouthWest();
-        let ne = bounds.getNorthEast();
-        let lngSpan = Math.abs(sw.lng - ne.lng);
-        let latSpan = Math.abs(ne.lat - sw.lat);
-        var markers = []
-        for (let i = 0; i < 12; i++) {
-          // var marker
 
-            let point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
-            console.log(point)
-            markers[i]  = drawTMaker(point, icon01,this);
-            // marker = new T.Marker(point, {icon: icon01});// 创建标注
-            // this.map.addOverLay(marker);
 
+        let markers = []
+
+        if(type == 'point'){
+          // if(this.pointList.length>0){
+          for (let i = 0; i < this.pointList.length; i++) {
+            // var marker
+            let point = new T.LngLat(this.pointList[i].longitude, this.pointList[i].latitude);
+            markers[i]  = drawTMaker(point, icon01,this,this.pointList[i]);
+          }
+          // }
+
+          //往地图上添加一个marker。传入参数坐标信息lnglat。传入参数图标信息。
+          function drawTMaker(lnglat,icon,that,txt){
+            var marker =  new T.Marker(lnglat, {icon: icon});
+            that.map.addOverLay(marker);
+            marker.addEventListener("click", function (m) {
+              console.log(m)
+              let infoWin1 = new T.InfoWindow();
+              let sContent =
+                '<ul class="img_list w100"><li> <div class="img_list_top clr_white">' +
+                '<img class="img_list_img" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg">' +
+                '<span class="block f15 type_tag">暴露垃圾</span>' +
+                ' <p class="f15 time">' + txt.create_time + '</p>' +
+                '</div>' +
+                '<div class="weui-cell f15">' +
+                '<div class="weui-cell__bd"> <p>报警点位：</p><p>'+ txt.name +'</p></div>' +
+                '<div class="weui-cell__ft"> <span class="block ml_20 baseColor bold state_type">未审核</span> </div>' +
+                '</div>' +
+                '</li>' +
+                '</ul>';
+              infoWin1.setContent(sContent);
+
+
+              marker.openInfoWindow(infoWin1);
+
+            });// 将标注添加到地图中
+            return marker;
+          }
+        }else if(type == 'case'){
+          // if(this.pointList.length>0){
+          for (let i = 0; i < this.caseList.length; i++) {
+            // var marker
+            let point = new T.LngLat(this.caseList[i].longitude, this.pointList[i].latitude);
+            markers[i]  = drawTMakerCase(point, icon02,this,this.caseList[i]);
+          }
+          // }
+
+          //往地图上添加一个marker。传入参数坐标信息lnglat。传入参数图标信息。
+          function drawTMakerCase(lnglat,icon,that,txt){
+            var marker =  new T.Marker(lnglat, {icon: icon});
+            that.map.addOverLay(marker);
+            marker.addEventListener("click", function (m) {
+              // let infoWin1 = new T.InfoWindow();
+              // let sContent =
+              //   '<ul class="img_list w100"><li> <div class="img_list_top clr_white">' +
+              //   '<img class="img_list_img" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg">' +
+              //   '<span class="block f15 type_tag">暴露垃圾</span>' +
+              //   ' <p class="f15 time">' + txt.create_time + '</p>' +
+              //   '</div>' +
+              //   '<div class="weui-cell f15">' +
+              //   '<div class="weui-cell__bd"> <p>报警点位：</p><p>'+ txt.name +'</p></div>' +
+              //   '<div class="weui-cell__ft"> <span class="block ml_20 baseColor bold state_type">未审核</span> </div>' +
+              //   '</div>' +
+              //   '</li>' +
+              //   '</ul>';
+              // infoWin1.setContent(sContent);
+              //
+              //
+              // marker.openInfoWindow(infoWin1);
+
+
+              that.showViewDialog = true;
+              that.caseData={
+                source:txt.org_name,
+                address:txt.name,
+                video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
+              }
+            });// 将标注添加到地图中
+            return marker;
+          }
         }
-
-//往地图上添加一个marker。传入参数坐标信息lnglat。传入参数图标信息。
-        function drawTMaker(lnglat,icon,that){
-          var marker =  new T.Marker(lnglat, {icon: icon});
-          that.map.addOverLay(marker);
-          marker.addEventListener("click", function (m) {
-            console.log(m)
-            marker.openInfoWindow(infoWin1);
-            that.showSearchDialog = true;
-          });// 将标注添加到地图中
-          return marker;
-        }
-
-
-
-
-
-        // this.map.setStyle('indigo');
-        document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
 
       },
       handleTab(val){
