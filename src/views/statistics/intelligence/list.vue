@@ -62,7 +62,7 @@
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
-        <el-table-column label="事件编号" align="center" prop=""></el-table-column>
+        <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
         <el-table-column label="违规类型" align="center" prop="intelligent_type_name">
 <!--          <template slot-scope="scope">-->
 <!--            <span>{{scope.row.type | filtersType}}</span>-->
@@ -74,7 +74,7 @@
 <!--          </template>-->
         </el-table-column>
         <el-table-column label="设备名称" align="center" prop="camera_name"></el-table-column>
-        <el-table-column label="报警点位" align="center" prop=""></el-table-column>
+        <el-table-column label="报警点位" align="center" prop="install_place"></el-table-column>
         <el-table-column label="上报时间" align="center" prop="create_time"></el-table-column>
         <el-table-column label="事件状态" align="center" prop="">
 <!--          <template slot-scope="scope">-->
@@ -127,7 +127,7 @@
                   @pagination="getList" class="text-right"/>
     </div>
 
-    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>
+<!--    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>-->
 
   </div>
 </template>
@@ -241,7 +241,7 @@
       },
 
       handleView(row){
-        this.$router.push({path:'/statistics/intelligence/view',query: {id:row.id}})
+        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
       },
 
       // 导出

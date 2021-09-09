@@ -70,7 +70,6 @@
 
         // When there is only one child router, the child router is displayed by default
         if (showingChildren.length === 1) {
-          console.log('一个一个一个')
           // if(showingChildren[0].path=='dashboard' || showingChildren[0].path=='companyIndex'){
           //   return true
           // }else{

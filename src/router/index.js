@@ -172,12 +172,12 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'intelligence/view',
+        path: 'intelligenceView',
         hidden:true,
         component: () => import('@/views/statistics/intelligence/components/view'),
-        name: '事件检索',
+        name: '事件详情',
         meta: {
-          title: '事件检索',
+          title: '事件详情',
           activeMenu: '/statistics/intelligence',
           roles: [
             'admin',

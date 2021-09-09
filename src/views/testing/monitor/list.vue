@@ -4,11 +4,11 @@
       <el-tabs type="card" v-model="activeName" style="flex:1;height: 787px;margin-right: 10px;">
         <el-tab-pane label="地图展示" name="first">
           <div id='mapDiv' class="mapDiv"></div>
-          <div class="map_info f14 text-center">
-            <p class="clr_white">图层管理</p>
-            <p><el-switch v-model="videoSwitch" active-color="#13ce66" class="mr_10" @change="handelPoint"></el-switch>视频点位</p>
-            <p><el-switch v-model="videoSwitch2" active-color="#13ce66" class="mr_10" @change="handelCase"></el-switch>事件点位</p>
-          </div>
+<!--          <div class="map_info f14 text-center">-->
+<!--            <p class="clr_white">图层管理</p>-->
+<!--            <p><el-switch v-model="videoSwitch" active-color="#13ce66" class="mr_10" @change="handelPoint"></el-switch>视频点位</p>-->
+<!--            <p><el-switch v-model="videoSwitch2" active-color="#13ce66" class="mr_10" @change="handelCase"></el-switch>事件点位</p>-->
+<!--          </div>-->
         </el-tab-pane>
       </el-tabs>
       <el-tabs type="card" v-model="activeName" style="width: 360px;">
@@ -31,6 +31,7 @@
       </el-tabs>
     </div>
     <caseView :showDialog.sync="showViewDialog" :caseData="caseData"></caseView>
+    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
   </div>
 </template>
 
@@ -42,6 +43,7 @@
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
   import caseView from "./components/view";
+  import videoView from "./components/videoView";
   import point01 from '@/assets/image/point01.png' // 引入刚才的map.js 注意路径
   import point02 from '@/assets/image/point02.png' // 引入刚才的map.js 注意路径
   import point03 from '@/assets/image/point03.png' // 引入刚才的map.js 注意路径
@@ -57,11 +59,13 @@
       draggable,
       Pagination,
       caseView,
-      LineChart
+      LineChart,
+      videoView
     },
     data() {
       return {
         caseData:{},
+        videoData:{},
         pointList:[],
         caseList:[],
         activeName:'first',
@@ -105,6 +109,7 @@
           status:0
         },],
         showViewDialog:false,
+        showVideoDialog:false,
         showCompanyDialog:false,
         total:1,
         companyList: [{
@@ -135,7 +140,7 @@
         centerLatitude:'30.20835',//中心纬度
         centerLongitude:'120.21194',//中心经度
         activeId:'',
-        listLoading: false,
+
       }
     },
 
@@ -161,6 +166,8 @@
     mounted() {
       this.onLoad();
       this.getPoint();
+      window.handleCase = this.handleCase;
+      window.handleVideo = this.handleVideo;
     },
     methods: {
       handelPoint(val){
@@ -268,6 +275,8 @@
             let point = new T.LngLat(this.pointList[i].longitude, this.pointList[i].latitude);
             markers[i]  = drawTMaker(point, icon01,this,this.pointList[i]);
           }
+
+
           // }
 
           //往地图上添加一个marker。传入参数坐标信息lnglat。传入参数图标信息。
@@ -277,21 +286,22 @@
             marker.addEventListener("click", function (m) {
               console.log(m)
               let infoWin1 = new T.InfoWindow();
+              console.log(txt)
+              let aa = JSON.stringify(txt).replace(/"/g, '&quot;')
               let sContent =
-                '<ul class="img_list w100"><li> <div class="img_list_top clr_white">' +
-                '<img class="img_list_img" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg">' +
-                '<span class="block f15 type_tag">暴露垃圾</span>' +
-                ' <p class="f15 time">' + txt.create_time + '</p>' +
+                '<div class="point_info">' +
+                '<p class="clr_white bg_blue">' + txt.create_time + '</p>' +
+                '<div class="flex baseColor">'+
+                '<div class="flex-item" onClick="handleVideo('+aa+')"><i class="el-icon-video-camera-solid f20"></i>实时视频</div>' +
+                '<div class="flex-item" onClick="handleVideo('+aa+')"><i class="el-icon-video-camera f20"></i>历史视频</div>' +
                 '</div>' +
-                '<div class="weui-cell f15">' +
-                '<div class="weui-cell__bd"> <p>报警点位：</p><p>'+ txt.name +'</p></div>' +
-                '<div class="weui-cell__ft"> <span class="block ml_20 baseColor bold state_type">未审核</span> </div>' +
-                '</div>' +
-                '</li>' +
-                '</ul>';
+                '<p class="f12 time">监控名称：' + txt.name + '</p>' +
+                '<p class="f12 time">所属区域：' + txt.org_name + '</p>' +
+                '<p class="f12 time">来源区域：' + txt.create_time + '</p>' +
+                '<p class="f12 time">所在地址：' + txt.create_time + '</p>' +
+                '<p class="f12 time text-right baseColor" onClick="handleCase('+txt.id+')">事件列表</p>' +
+                '</div>';
               infoWin1.setContent(sContent);
-
-
               marker.openInfoWindow(infoWin1);
 
             });// 将标注添加到地图中
@@ -311,25 +321,6 @@
             var marker =  new T.Marker(lnglat, {icon: icon});
             that.map.addOverLay(marker);
             marker.addEventListener("click", function (m) {
-              // let infoWin1 = new T.InfoWindow();
-              // let sContent =
-              //   '<ul class="img_list w100"><li> <div class="img_list_top clr_white">' +
-              //   '<img class="img_list_img" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg">' +
-              //   '<span class="block f15 type_tag">暴露垃圾</span>' +
-              //   ' <p class="f15 time">' + txt.create_time + '</p>' +
-              //   '</div>' +
-              //   '<div class="weui-cell f15">' +
-              //   '<div class="weui-cell__bd"> <p>报警点位：</p><p>'+ txt.name +'</p></div>' +
-              //   '<div class="weui-cell__ft"> <span class="block ml_20 baseColor bold state_type">未审核</span> </div>' +
-              //   '</div>' +
-              //   '</li>' +
-              //   '</ul>';
-              // infoWin1.setContent(sContent);
-              //
-              //
-              // marker.openInfoWindow(infoWin1);
-
-
               that.showViewDialog = true;
               that.caseData={
                 source:txt.org_name,
@@ -341,6 +332,22 @@
           }
         }
 
+      },
+
+      handleCase(txt){
+        this.showViewDialog = true
+        this.caseData = {id:txt.id}
+      },
+      handleVideo(txt){
+        console.log('haode haode')
+        console.log(txt)
+        // console.log(name)
+        this.showVideoDialog = true
+        this.videoData={
+          source:txt.org_name,
+          address:txt.name,
+          video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
+        }
       },
       handleTab(val){
         this.activeId = val;
@@ -358,8 +365,19 @@
     background: #fff;
     box-sizing: border-box;
   }
-  /deep/.tdt-infowindow-content p{
-    margin: 0;
+  /deep/.tdt-infowindow-content-wrapper{
+    padding: 0;
+    .tdt-infowindow-content {
+      margin: 0;
+      .point_info{
+        &>p,&>div{
+          margin: 0;
+          padding: 0 10px;
+          line-height: 2;
+        }
+      }
+
+    }
   }
 
   /*/deep/.el-tab-pane{*/
