@@ -63,7 +63,7 @@
         <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
         <el-table-column label="上报时间" align="center" prop="collect_time">
           <template slot-scope="scope">
-            <span>{{$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</span>
+            <span>{{scope.row.collect_time?$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss'):''}}</span>
           </template>
         </el-table-column>
         <el-table-column label="事件状态" align="center" prop="">

@@ -193,7 +193,7 @@
         this.map.clearOverLays();
         var icon01 = new T.Icon({
           iconUrl: point05,
-          iconSize: new T.Point(30, 51),
+          iconSize: new T.Point(35, 40),
           iconAnchor: new T.Point(34, 59)
         });
         var icon02 = new T.Icon({
