@@ -107,7 +107,6 @@
                   @pagination="getList" class="text-right"/>
     </div>
 
-    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>
 
   </div>
 </template>
@@ -118,14 +117,12 @@
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
-  import paraView from "./components/view";
   export default {
     name: 'parameterList',
     directives: {waves},
     components: {
       draggable,
       Pagination,
-      paraView
     },
     data() {
       return {
@@ -177,15 +174,15 @@
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
+        let StatusArr = {1: '未审核', 2: '已审核'};
         return StatusArr[value]
       },
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+      filtersAudited: function (value) {
+        let StatusArr = {1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'};
         return StatusArr[value]
       },
-      filtersSource: function (value) {
-        let StatusArr = {0: '其它', 1: '滨康二区',}
+      filtersImportant: function (value) {
+        let StatusArr = {1: '一般案件', 2: '重大案件'};
         return StatusArr[value]
       },
     },
@@ -265,7 +262,7 @@
 
 
       handleView(row){
-        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
+        this.$router.push({path:'/devOps/verifyView',query: {id:row.id,status:row.status}})
       },
 
       // 导出

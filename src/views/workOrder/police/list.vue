@@ -207,7 +207,7 @@
       },
 
       handleView(row){
-        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
+        this.$router.push({path:'/workOrder/policeView',query: {id:row.id,status:row.status}})
       },
       handleExport(){},
 

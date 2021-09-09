@@ -11,7 +11,7 @@
         <ul class="img_list flex" v-show="tabIndex == 0">
           <li >
             <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="formData.image">
+              <img class="img_list_img" :src="formData.images">
               <span class="block f15 type_tag">{{formData.category_big_name}}</span>
               <p class="f15 time">{{formData.collect_time}}</p>
             </div>
@@ -87,7 +87,7 @@
              </el-form-item>
            </el-form>
            <div class="text-center mt_20 mb_20">
-             <el-button type="primary" @click="onSubmit" :loading="paraLoading">审核</el-button>
+             <el-button type="primary" v-if="this.$route.query.status == 1" @click="onSubmit" :loading="paraLoading">审核</el-button>
              <el-button type="primary" plain @click="getCase(0)">上一条</el-button>
              <el-button type="primary" plain @click="getCase(1)">下一条</el-button>
            </div>
@@ -180,13 +180,16 @@
         status:0
       },],
         formData:{
-          intelligent_type_name:'',
-          create_time:'',
-          camera_name:'',
+          // category_big_name、collect_time、community_id_name、address
+          category_big_name:'',
+          collect_time:'',
+          community_id_name:'',
+          address:'',
           latitude:'',
           longitude:'',
-          install_place:'',
-          pic_url:'',
+          // install_place:'',
+          // pic_url:'',
+          images:'',
           list:[]
         },
         tabIndex:0,
@@ -239,8 +242,10 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.$route.query.id,type:val,}).then(res=>{
-          const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url} = res.data
-          this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url}
+          const { category_big_name, collect_time,community_id_name,address, latitude,longitude,images,list} = res.data
+          this.formData = { category_big_name, collect_time,community_id_name,address, latitude,longitude,images,list}
+          console.log('fashfsaf')
+          console.log(this.formData)
           this.mapPoint();
         });
       },
@@ -278,8 +283,14 @@
 
       getView(){
         collectDetail({id:this.$route.query.id}).then(res=>{
-          const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
-          this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
+          // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
+          // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
+          // this.mapPoint();
+
+          const { category_big_name, collect_time,community_id_name,address, latitude,longitude,images,list} = res.data
+          this.formData = { category_big_name, collect_time,community_id_name,address, latitude,longitude,images,list}
+          console.log('fashfsaf')
+          console.log(this.formData)
           this.mapPoint();
         });
       },

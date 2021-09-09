@@ -132,7 +132,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'police/view',
+        path: 'policeView',
         hidden:true,
         component: () => import('@/views/workOrder/police/components/view'),
         name: '预警审核',
@@ -204,6 +204,18 @@ export const asyncRoutes = [
             'admin',
           ]
         }
+      },{
+        path: 'dataView',
+        hidden:true,
+        component: () => import('@/views/statistics/data/components/view'),
+        name: '重复事件查询详情',
+        meta: {
+          title: '重复事件查询详情',
+          activeMenu: '/statistics/data',
+          roles: [
+            'admin',
+          ]
+        }
       },
     ]
   },
@@ -230,7 +242,19 @@ export const asyncRoutes = [
             'admin',
           ]
         }
-      },
+      },{
+        path: 'verifyView',
+        hidden:true,
+        component: () => import('@/views/devOps/verify/components/view'),
+        name: '示范小区详情',
+        meta: {
+          title: '示范小区详情',
+          activeMenu: '/devOps/verify',
+          roles: [
+            'admin',
+          ]
+        }
+      }
     ]
   },
   {

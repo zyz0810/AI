@@ -243,7 +243,7 @@
 
 
       handleView(row){
-        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
+        this.$router.push({path:'/statistics/dataView',query: {id:row.id,status:row.status}})
       },
 
       // 导出
