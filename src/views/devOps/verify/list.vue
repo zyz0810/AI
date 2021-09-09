@@ -51,62 +51,59 @@
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
-        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'">切换 </div>
+        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
-        <el-table-column label="事件编号" align="center" prop=""></el-table-column>
-        <el-table-column label="违规类型" align="center" prop="">
+        <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
+        <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
+        <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
+        <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
+        <el-table-column label="上报时间" align="center" prop="collect_time">
           <template slot-scope="scope">
-<!--            <span>{{scope.row.type | filtersType}}</span>-->
+            <span>{{$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="">
-          <template slot-scope="scope">
-<!--            <span>{{scope.row.source | filtersSource}}</span>-->
-          </template>
-        </el-table-column>
-        <el-table-column label="设备名称" align="center" prop=""></el-table-column>
-        <el-table-column label="报警点位" align="center" prop=""></el-table-column>
-        <el-table-column label="上报时间" align="center" prop=""></el-table-column>
         <el-table-column label="事件状态" align="center" prop="">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.status | filtersStatus}}</span>-->
-<!--          </template>-->
+          <template slot-scope="scope">
+            <span>{{scope.row.status | filtersStatus}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
-            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleView"></i>
+            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView(scope.row)"></i>
+            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleExport"></i>
           </template>
         </el-table-column>
       </el-table>
 
-      <ul class="img_list flex" style="height:537px;" v-if="displayType=='imgList'">
+      <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
         <li v-for="(item,index) in list" :key="index">
           <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.image">
-            <span class="block f15 type_tag">{{item.type | filtersType}}</span>
-            <p class="f15 time">{{item.time}}</p>
+            <img class="img_list_img" :src="item.images">
+            <span class="block f14 type_tag">{{item.category_big_name}}</span>
+            <!--//事件状态-->
+            <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
           </div>
-          <div class="weui-cell f15">
+          <div class="weui-cell f14">
             <div class="weui-cell__bd">
               <p>报警点位：</p>
-              <p>{{item.address}}</p>
+              <p class="overflow_three mr_10">{{item.address}}</p>
             </div>
             <div class="weui-cell__ft">
               <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
             </div>
           </div>
           <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item"><i class="iconfont icon-shenhe"></i>审核</div>
+            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
             <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
           </div>
         </li>
       </ul>
-      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
 
@@ -116,7 +113,7 @@
 </template>
 
 <script>
-  import {communityList, } from '@/api/monitor'
+  import {collectList, } from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -158,7 +155,7 @@
           name: '',
           status: undefined,
           page: 1,
-          limit: 10
+          pageSize: 10
         },
         updateId: undefined,
         dialogFormVisible: false,
@@ -226,7 +223,7 @@
         this.getList()
       },
       getList() {
-        communityList(this.listQuery).then(res => {
+        collectList(this.listQuery).then(res => {
           this.list = res.data.data
           this.total = res.data.total
         });
@@ -237,7 +234,7 @@
           name: '',
           status: undefined,
           page: 1,
-          limit: 10
+          pageSize: 10
         }
         this.getList();
       },
@@ -268,11 +265,11 @@
 
 
       handleView(row){
-        this.showViewDialog = true
-        this.viewData = {
-          id:row.id
-        }
+        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
       },
+
+      // 导出
+      handleExport(){},
 
 
     }

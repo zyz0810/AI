@@ -1042,3 +1042,9 @@ input[type="number"] {
 .bg_blue{
   background: #2d628e;
 }
+.overflow_three{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}

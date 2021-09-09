@@ -16,13 +16,15 @@
           <ul class="img_list w100 bg_white">
             <li v-for="(item,index) in list" :key="index" class="mb_20">
               <div class="img_list_top clr_white">
-                <img class="img_list_img" :src="item.image">
-                <span class="block f15 type_tag">{{item.type | filtersType}}</span>
-                <p class="f15 time">{{item.time}}</p>
+                <img class="img_list_img" :src="item.images">
+                <span class="block f14 type_tag">{{item.category_big_name}}</span>
+                <!--//事件状态-->
+                <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
               </div>
-              <div class="weui-cell f15">
+              <div class="weui-cell f14">
                 <div class="weui-cell__bd">
-                  <p>报警点位：{{item.address}}</p>
+                  <p>报警点位：</p>
+                  <p>{{item.address}}</p>
                 </div>
               </div>
             </li>
@@ -37,7 +39,7 @@
 
 <script>
   import echarts from 'echarts'
-  import {pointList,} from '@/api/monitor'
+  import {pointList,collectList} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -71,76 +73,18 @@
         activeName:'first',
         videoSwitch:true,
         videoSwitch2:false,
-        list: [{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },],
+        list: [],
         showViewDialog:false,
         showVideoDialog:false,
-        showCompanyDialog:false,
-        total:1,
-        companyList: [{
-          name:'列表1',
-          address:'杭州市',
-          time:1298963414,
-          num:1,
-          status:1
-        },{
-          name:'列表2',
-          address:'杭州市',
-          time:1298963414,
-          num:1,
-          status:2
-        }],
-        companyListLoading: false,
+        total:0,
         listQuery: {
-          name: '',
-          status: undefined,
           page: 1,
           limit: 10
-        },
-        temp:{
-          area:'',
-          name:''
         },
         zoom:12,
         centerLatitude:'30.20835',//中心纬度
         centerLongitude:'120.21194',//中心经度
         activeId:'',
-
       }
     },
 
@@ -151,25 +95,32 @@
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
+        let StatusArr = {1: '未审核', 2: '已审核'};
         return StatusArr[value]
       },
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+      filtersAudited: function (value) {
+        let StatusArr = {1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'};
         return StatusArr[value]
       },
-      filtersSource: function (value) {
-        let StatusArr = {0: '其它', 1: '滨康二区',}
+      filtersImportant: function (value) {
+        let StatusArr = {1: '一般案件', 2: '重大案件'};
         return StatusArr[value]
       },
     },
     mounted() {
       this.onLoad();
       this.getPoint();
+      this.getNew();
       window.handleCase = this.handleCase;
       window.handleVideo = this.handleVideo;
     },
     methods: {
+      getNew(){
+        collectList(this.listQuery).then(res => {
+          this.list = res.data.data
+          this.total = res.data.total
+        });
+      },
       handelPoint(val){
         // caseList
         // ：active-value得为true

@@ -63,35 +63,35 @@
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
         <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
-        <el-table-column label="违规类型" align="center" prop="intelligent_type_name">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.type | filtersType}}</span>-->
-<!--          </template>-->
+        <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
+        <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
+        <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
+        <el-table-column label="上报时间" align="center" prop="collect_time">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</span>
+          </template>
         </el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.source | filtersSource}}</span>-->
-<!--          </template>-->
-        </el-table-column>
-        <el-table-column label="设备名称" align="center" prop="camera_name"></el-table-column>
-        <el-table-column label="报警点位" align="center" prop="install_place"></el-table-column>
-        <el-table-column label="上报时间" align="center" prop="create_time"></el-table-column>
         <el-table-column label="事件状态" align="center" prop="">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.status | filtersStatus}}</span>-->
-<!--          </template>-->
+          <template slot-scope="scope">
+            <span>{{scope.row.status | filtersStatus}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="审核意见" align="center" prop="">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.status | filtersStatus}}</span>-->
-<!--          </template>-->
+          <template slot-scope="scope">
+            <span>{{scope.row.is_audited | filtersAudited}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="事件等级" align="center" prop="">
-<!--          <template slot-scope="scope">-->
-<!--            <span>{{scope.row.status | filtersStatus}}</span>-->
-<!--          </template>-->
+          <template slot-scope="scope">
+            <span>{{scope.row.is_important | filtersImportant}}</span>
+          </template>
         </el-table-column>
-        <el-table-column label="审核时间" align="center" prop=""></el-table-column>
+        <el-table-column label="审核时间" align="center" prop="update_at">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.update_at).format('YYYY-MM-DD HH:mm:ss')}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
@@ -104,21 +104,22 @@
       <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
         <li v-for="(item,index) in list" :key="index">
           <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.pic_url">
-            <span class="block f15 type_tag">{{item.type | filtersType}}</span>
-            <p class="f15 time">{{item.time}}</p>
+            <img class="img_list_img" :src="item.images">
+            <span class="block f14 type_tag">{{item.category_big_name}}</span>
+            <!--//事件状态-->
+            <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
           </div>
-          <div class="weui-cell f15">
+          <div class="weui-cell f14">
             <div class="weui-cell__bd">
               <p>报警点位：</p>
-              <p>{{item.address}}</p>
+              <p class="overflow_three mr_10">{{item.address}}</p>
             </div>
             <div class="weui-cell__ft">
               <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
             </div>
           </div>
           <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item"><i class="iconfont icon-shenhe"></i>审核</div>
+            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
             <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
           </div>
         </li>
@@ -164,15 +165,15 @@
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
+        let StatusArr = {1: '未审核', 2: '已审核'}
         return StatusArr[value]
       },
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+      filtersAudited: function (value) {
+        let StatusArr = {1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'}
         return StatusArr[value]
       },
-      filtersSource: function (value) {
-        let StatusArr = {0: '其它', 1: '滨康二区',}
+      filtersImportant: function (value) {
+        let StatusArr = {1: '一般案件', 2: '重大案件'}
         return StatusArr[value]
       },
     },

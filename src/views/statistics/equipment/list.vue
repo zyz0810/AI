@@ -14,22 +14,6 @@
             <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="违规类型：">
-          <el-select v-model="listQuery.status" placeholder="选择违规类型" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="上报时间：" prop="name">
-          <el-date-picker
-            v-model="listQuery.yearChoose"
-            clearable
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item>
           <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
         </el-form-item>
@@ -38,85 +22,54 @@
     <div class="p20 bg_white">
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
-        <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
-        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
-      <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
+      <el-table v-loading="listLoading" :data="list" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
-        <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
-        <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
         <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
-        <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
-        <el-table-column label="上报时间" align="center" prop="collect_time">
-          <template slot-scope="scope">
-            <span>{{$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="事件状态" align="center" prop="">
+        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
+        <el-table-column label="所在位置" align="center" prop="address"></el-table-column>
+        <el-table-column label="使用状态" align="center" prop="">
           <template slot-scope="scope">
             <span>{{scope.row.status | filtersStatus}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
-            <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
-            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView(scope.row)"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleExport"></i>
+            <el-button class="filter-item" type="primary" @click="handleView(scope.row)">设备详情</el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
-        <li v-for="(item,index) in list" :key="index">
-          <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.images">
-            <span class="block f14 type_tag">{{item.category_big_name}}</span>
-            <!--//事件状态-->
-            <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
-          </div>
-          <div class="weui-cell f14">
-            <div class="weui-cell__bd">
-              <p>报警点位：</p>
-              <p class="overflow_three mr_10">{{item.address}}</p>
-            </div>
-            <div class="weui-cell__ft">
-              <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
-            </div>
-          </div>
-          <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
-            <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
-          </div>
-        </li>
-      </ul>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
+    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>
   </div>
 </template>
 
 <script>
   import {collectList, } from '@/api/monitor'
-  import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
+  import paraView from "./components/view";
   export default {
-    name: 'policeList',
+    name: 'equipmentList',
     directives: {waves},
     components: {
-      draggable,
       Pagination,
+      paraView
     },
     data() {
       return {
-        displayType:'table',
+        showViewDialog:false,
+        viewData:{},
+        paraData:{},
+        paraLoading:false,
         updateBtn: true,
         enableBtn: true,
         disableBtn: true,
-        total: 0,
+        total: 16,
         list: [],
         listLoading: false,
         listQuery: {
@@ -130,15 +83,7 @@
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {1: '未审核', 2: '已审核'};
-        return StatusArr[value]
-      },
-      filtersAudited: function (value) {
-        let StatusArr = {1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'};
-        return StatusArr[value]
-      },
-      filtersImportant: function (value) {
-        let StatusArr = {1: '一般案件', 2: '重大案件'};
+        let StatusArr = {0: '未审核', 1: '已审核'}
         return StatusArr[value]
       },
     },
@@ -181,7 +126,6 @@
           this.total = res.data.total
         });
       },
-
       clickRow(row){
         this.$refs.tableList.toggleRowSelection(row)
       },
@@ -207,9 +151,12 @@
       },
 
       handleView(row){
-        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
+        this.showViewDialog = true
+        this.viewData = {
+          id:row.id
+        }
       },
-      handleExport(){},
+
 
     }
   }

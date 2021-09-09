@@ -45,25 +45,21 @@
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
-        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'">切换 </div>
+        <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
-        <el-table-column label="事件编号" align="center" prop="num"></el-table-column>
-        <el-table-column label="违规类型" align="center" prop="name">
-          <template slot-scope="scope">
-            <span>{{scope.row.type | filtersType}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="source">
-          <template slot-scope="scope">
-            <span>{{scope.row.source | filtersSource}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="设备名称" align="center" prop="name"></el-table-column>
+        <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
+        <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
+        <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
         <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
-        <el-table-column label="上报时间" align="center" prop="time"></el-table-column>
+        <el-table-column label="上报时间" align="center" prop="collect_time">
+          <template slot-scope="scope">
+            <span>{{$moment(scope.row.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="事件状态" align="center" prop="">
           <template slot-scope="scope">
             <span>{{scope.row.status | filtersStatus}}</span>
@@ -72,45 +68,45 @@
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
-            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleView"></i>
+            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView(scope.row)"></i>
+            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleExport"></i>
           </template>
         </el-table-column>
       </el-table>
 
-      <ul class="img_list flex" style="height:537px;" v-if="displayType=='imgList'">
+      <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
         <li v-for="(item,index) in list" :key="index">
           <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.image">
-            <span class="block f15 type_tag">{{item.type | filtersType}}</span>
-            <p class="f15 time">{{item.time}}</p>
+            <img class="img_list_img" :src="item.images">
+            <span class="block f14 type_tag">{{item.category_big_name}}</span>
+            <!--//事件状态-->
+            <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
           </div>
-          <div class="weui-cell f15">
+          <div class="weui-cell f14">
             <div class="weui-cell__bd">
               <p>报警点位：</p>
-              <p>{{item.address}}</p>
+              <p class="overflow_three mr_10">{{item.address}}</p>
             </div>
             <div class="weui-cell__ft">
               <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
             </div>
           </div>
           <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item"><i class="iconfont icon-shenhe"></i>审核</div>
+            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
             <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
           </div>
         </li>
       </ul>
-      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
 
-    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>
 
   </div>
 </template>
 
 <script>
-  import {paraList, paraSave, paraUpdate, paraDelete} from '@/api/parameter'
+  import {collectList, } from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -146,187 +142,28 @@
         disableBtn: true,
         total: 16,
         parameterValueList: [{name: ''}],
-        list: [{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:2,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:3,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:1,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:2,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:3,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:1,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:2,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:3,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:1,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:2,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:3,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:1,
-          name:'ST1234312',
-          status:0
-        },],
+        list: [],
         listLoading: false,
         listQuery: {
           name: '',
           status: undefined,
           page: 1,
-          limit: 10
-        },
-        updateId: undefined,
-        dialogFormVisible: false,
-        temp: {
-          // id: undefined,
-          status: 1,
-          name: '',
-          orders: '',
-          isRequired: 0,
-          operatingMode: 0,
-          parameterValueList: [],
-        },
-        dialogStatus: '',
-        rules: {
-          name: [{required: true, message: '请输入名称', trigger: 'change'}],
+          pageSize: 10
         },
         tableHeight:'100'
       }
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
+        let StatusArr = {1: '未审核', 2: '已审核'}
         return StatusArr[value]
       },
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+      filtersAudited: function (value) {
+        let StatusArr = {1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'}
         return StatusArr[value]
       },
-      filtersSource: function (value) {
-        let StatusArr = {0: '其它', 1: '滨康二区',}
+      filtersImportant: function (value) {
+        let StatusArr = {1: '一般案件', 2: '重大案件'}
         return StatusArr[value]
       },
     },
@@ -355,7 +192,7 @@
           }
         };
       });
-      // this.getList();
+      this.getList();
     },
     methods: {
 
@@ -364,9 +201,9 @@
         this.getList()
       },
       getList() {
-        paraList(this.listQuery).then(res => {
+        collectList(this.listQuery).then(res => {
           this.list = res.data.data
-          this.total = res.data.count
+          this.total = res.data.total
         });
       },
 
@@ -375,7 +212,7 @@
           name: '',
           status: undefined,
           page: 1,
-          limit: 10
+          pageSize: 10
         }
         this.getList();
       },
@@ -406,11 +243,11 @@
 
 
       handleView(row){
-        this.showViewDialog = true
-        this.viewData = {
-          id:row.id
-        }
+        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
       },
+
+      // 导出
+      handleExport(){},
 
 
     }

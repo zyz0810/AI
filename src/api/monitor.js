@@ -78,7 +78,33 @@ export function collectDetail(data) {
     data: Qs.stringify(data)
   })
 }
-
+/* AI案件详情-审核
+ * id
+ * category_big 大类编号
+ * category_big_name 大类名
+ * category_small 小类编号
+ * category_small_name 小类名
+ * is_audited 1：立案；2：暂不立案；3：再学习；4：结案',
+ * remark 备注
+ * ids 重复案件ID 多个用英文,分割
+ */
+export function collectEdit(data) {
+  return request({
+    url:'/ai/case_collect/editCollect',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
+/* 类别列表
+ * type type ==allList 就没有分页
+ */
+export function categoryList(data) {
+  return request({
+    url:'/admin/category/categoryList',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
 /* 案件上一条 下一条
  * id 案件ID
  * type 1 升序 0 降序

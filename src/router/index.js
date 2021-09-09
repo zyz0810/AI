@@ -185,9 +185,9 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'data',
-        component: () => import('@/views/statistics/data/list'),
-        name: 'dataList',
+        path: 'equipment',
+        component: () => import('@/views/statistics/equipment/list'),
+        name: 'equipmentList',
         meta: {
           title: '设备检索',
           roles: [
@@ -195,7 +195,7 @@ export const asyncRoutes = [
           ]
         }
       },{
-        path: 'data1',
+        path: 'data',
         component: () => import('@/views/statistics/data/list'),
         name: 'dataList',
         meta: {

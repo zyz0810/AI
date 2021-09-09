@@ -14,11 +14,12 @@
       <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
     </div>
     <ul class="img_list flex" style="height:537px;">
-      <li v-for="(item,index) in list" :key="index">
+      <li v-for="(item,index) in repeatData.list" :key="index">
         <div class="img_list_top clr_white">
-          <img class="img_list_img" :src="item.image">
-          <span class="block f15 type_tag">{{item.type}}</span>
-          <p class="f15 time">{{item.time}}</p>
+          <img class="img_list_img" :src="item.images">
+          <span class="block f15 type_tag">{{item.category_big_name}}</span>
+          <!--//事件状态-->
+          <p class="f15 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
         </div>
         <div class="weui-cell f15">
           <div class="weui-cell__bd">
@@ -30,17 +31,18 @@
           </div>
         </div>
         <div class="flex text-center img_list_operation f14 clr_white bold">
-          <div class="flex-item"><i class="iconfont icon-shenhe"></i>审核</div>
+          <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
           <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
         </div>
       </li>
     </ul>
-
+    <!--<pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"-->
+                <!--@pagination="getList" class="text-right"/>-->
   </myDialog>
 </template>
 
 <script>
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {collectList, } from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -61,41 +63,19 @@
         required: true,
         type: Object,
         default: {
-          option: {},
-          operatorType: "view",
-          id: ""
+          list: []
         }
       }
     },
     data() {
       return {
         paraLoading:false,
-        operatingMode:'',
         updateBtn:true,
         total:0,
         specificationsItem:[''],
-        list: [{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        },{
-          num:'AJ3542221133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:0,
-          time:'2021-6-12 13:22:01',
-          address:'文一路356号',
-          source:0,
-          name:'ST1234312',
-          status:0
-        },],
+        // list: [],
         listLoading: false,
         listQuery:{
-          parameterId:'',
           page:1,
           limit:10
         },
@@ -138,16 +118,16 @@
     },
     methods: {
       open(){
-        this.listQuery.parameterId = this.paraData.id
-        this.operatingMode = this.paraData.option.operatingMode
-        this.getList();
-        this.name = this.paraData.option.name
+        // this.getList();
       },
       close(){},
+      handleView(row){
+        this.$router.push({path:'/statistics/intelligenceView',query: {id:row.id}})
+      },
       getList(){
-        paraValueList(this.listQuery).then(res=>{
-          this.list = res.data.data;
-          this.total = res.data.count
+        collectList(this.listQuery).then(res => {
+          this.list = res.data.data
+          this.total = res.data.total
         });
       },
       clickRow(row){
