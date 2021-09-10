@@ -309,7 +309,33 @@ export const asyncRoutes = [
         }
       },
     ]
-  }
+  },
+  {
+    path: '/category',
+    component: Layout,
+    redirect: 'noRedirect',
+    // name: '示范小区',
+    meta: {
+      // title: '示范小区',
+      icon: 'el-icon-menu',
+      roles: [
+        'admin',
+      ]
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/category/list'),
+        name: 'categoryList',
+        meta: {
+          title: '类型设置',
+          roles: [
+            'admin',
+          ]
+        }
+      }
+    ]
+  },
 ]
 
 const createRouter = () =>
