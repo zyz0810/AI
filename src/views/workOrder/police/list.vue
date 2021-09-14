@@ -2,27 +2,21 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true" :model="listQuery" class="search_form">
-        <el-form-item label="巡查来源：">
-          <el-select v-model="listQuery.status" placeholder="选择巡查来源" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备名称：">
-          <el-select v-model="listQuery.status" placeholder="选择设备名称" @change="handleFilter">
+        <el-form-item label="监控点名称：">
+          <el-select v-model="listQuery.facility_id" placeholder="选择设备名称" @change="handleFilter">
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="违规类型：">
-          <el-select v-model="listQuery.status" placeholder="选择违规类型" @change="handleFilter">
+          <el-select v-model="listQuery.category" placeholder="选择违规类型" @change="handleFilter">
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="上报时间：" prop="name">
+        <el-form-item label="上报时间：" prop="dateTime">
           <el-date-picker
-            v-model="listQuery.yearChoose"
+            v-model="dateTime"
             clearable
             type="daterange"
             range-separator="至"
@@ -120,8 +114,11 @@
         list: [],
         listLoading: false,
         listQuery: {
-          name: '',
-          status: undefined,
+          Status : 1,
+          start_time: '',
+          end_time:'',
+          category_big:'',
+          category_small:'',
           page: 1,
           pageSize: 10
         },
@@ -143,6 +140,24 @@
       },
     },
     computed: {
+      dateTime: {
+        get () {
+          if (this.listQuery.start_time && this.listQuery.end_time) {
+            return [this.listQuery.start_time, this.listQuery.end_time];
+          } else {
+            return [];
+          }
+        },
+        set (v) {
+          if (v) {
+            this.listQuery.start_time = v[0];
+            this.listQuery.end_time = v[1];
+          } else {
+            this.listQuery.start_time = "";
+            this.listQuery.end_time = "";
+          }
+        },
+      },
       ...mapState({
         roles: state => state.user.roles,
       }),

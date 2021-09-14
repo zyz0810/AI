@@ -54,3 +54,12 @@ export function categorySmall(data) {
     data: Qs.stringify(data,{ arrayFormat: 'indices', allowDots: true })
   })
 }
+/* 违规类型
+ */
+export function departTree(data) {
+  return request({
+    url: `/admin/Department/departTree`,
+    method: 'post',
+    data: Qs.stringify(data,{ arrayFormat: 'indices', allowDots: true })
+  })
+}

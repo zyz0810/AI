@@ -2,13 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true" :model="listQuery" class="search_form">
-        <el-form-item label="巡查来源：">
-          <el-select v-model="listQuery.status" placeholder="选择巡查来源" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备名称：">
+
+        <el-form-item label="监控点名称：">
           <el-select v-model="listQuery.status" placeholder="选择设备名称" @change="handleFilter">
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>

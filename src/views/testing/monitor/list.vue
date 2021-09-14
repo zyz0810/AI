@@ -78,8 +78,11 @@
         showVideoDialog:false,
         total:0,
         listQuery: {
+          Status:1,
+          start_time:'',
+          end_time:'',
           page: 1,
-          limit: 10
+          pageSize: 10
         },
         zoom:12,
         centerLatitude:'30.20835',//中心纬度
