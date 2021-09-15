@@ -3,16 +3,15 @@
     <div class="filter-container">
       <el-form :inline="true" :model="listQuery" class="search_form">
         <el-form-item label="监控点名称：">
-          <el-select v-model="listQuery.facility_id" placeholder="选择设备名称" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
+          <el-input v-model.trim="listQuery.facility_name" placeholder="请输入监控点名称" autocomplete="off" clearable/>
         </el-form-item>
         <el-form-item label="违规类型：">
-          <el-select v-model="listQuery.category" placeholder="选择违规类型" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
+          <!--<el-select v-model="listQuery.category" placeholder="选择违规类型" @change="handleFilter">-->
+          <!--<el-option label="启用" value="1"></el-option>-->
+          <!--<el-option label="禁用" value="0"></el-option>-->
+          <!--</el-select>-->
+          <el-cascader ref="cascaderPublish" clearable v-model="listQuery.category_small" :options="categoryList" @change="changeCategory" :show-all-levels="false" filterable :props="props" placeholder="请选择违规类型"></el-cascader>
+
         </el-form-item>
         <el-form-item label="上报时间：" prop="dateTime">
           <el-date-picker
@@ -96,7 +95,8 @@
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
-  import Pagination from "@/components/Pagination/index"; // waves directive
+  import Pagination from "@/components/Pagination/index";
+  import {departTree} from "@/api/category"; // waves directive
   export default {
     name: 'policeList',
     directives: {waves},
@@ -106,6 +106,13 @@
     },
     data() {
       return {
+        props: {
+          expandTrigger: "click",
+          value: "id",
+          label: "department_name",
+          children: "child",
+          disabled: false,
+        },
         displayType:'table',
         updateBtn: true,
         enableBtn: true,
@@ -113,8 +120,9 @@
         total: 0,
         list: [],
         listLoading: false,
+        categoryList:[],
         listQuery: {
-          Status : 1,
+          status : 1,
           start_time: '',
           end_time:'',
           category_big:'',
@@ -183,9 +191,35 @@
         };
       });
       this.getList();
+      this.getCategory();
     },
     methods: {
-
+      changeCategory(val){
+        this.listQuery.category_big = val[0];
+        this.listQuery.category_small = val[1];
+      },
+      getCategory() {
+        departTree().then(res => {
+          this.categoryList = this.getTreeData(res.data);
+        });
+      },
+      getTreeData (data) {
+        if (data != "" || data != null) {
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].child.length < 1) {
+              // children若为空数组，则将children设为undefined
+              // if (data[i].grade == 3) {
+              //   data[i].childrens = undefined;
+              // }
+              data[i].child = undefined;
+            } else {
+              // children若不为空数组，则继续 递归调用 本方法
+              this.getTreeData(data[i].child);
+            }
+          }
+          return data;
+        }
+      },
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()

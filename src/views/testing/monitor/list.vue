@@ -163,12 +163,7 @@
         // };
 
       },
-      companyShow(){
 
-      },
-      handleFilter(){
-
-      },
       getPoint(){
         pointList({type:'allList'}).then(res=>{
           this.pointList = res.data;
@@ -204,22 +199,6 @@
           iconSize: new T.Point(66, 59),
           iconAnchor: new T.Point(34, 59)
         });
-        // var icon03 = new T.Icon({
-        //   iconUrl: point03,
-        //   iconSize: new T.Point(66, 59),
-        //   iconAnchor: new T.Point(34, 59)
-        // });
-        // var icon04 = new T.Icon({
-        //   iconUrl: point04,
-        //   iconSize: new T.Point(66, 59),
-        //   iconAnchor: new T.Point(34, 59)
-        // });
-        //创建信息窗口对象
-        // let marker = new T.Marker(new T.LngLat(117.283042, 31.86119));// 创建标注
-        // let marker = new T.Marker(new T.LngLat(this.centerLongitude, this.centerLatitude), {icon: icon});// 创建标注
-        // this.map.addOverLay(marker);
-
-
         let markers = []
 
         if(type == 'point'){
@@ -229,8 +208,6 @@
             let point = new T.LngLat(this.pointList[i].longitude, this.pointList[i].latitude);
             markers[i]  = drawTMaker(point, icon01,this,this.pointList[i]);
           }
-
-
           // }
 
           //往地图上添加一个marker。传入参数坐标信息lnglat。传入参数图标信息。
@@ -276,7 +253,7 @@
             that.map.addOverLay(marker);
             marker.addEventListener("click", function (m) {
               that.showViewDialog = true;
-              that.caseData={
+              that.videoData={
                 source:txt.org_name,
                 address:txt.name,
                 video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
@@ -285,17 +262,13 @@
             return marker;
           }
         }
-
       },
 
       handleCase(txt){
         this.showViewDialog = true
-        this.caseData = {id:txt.id}
+        this.caseData = {id:txt}
       },
       handleVideo(txt){
-        console.log('haode haode')
-        console.log(txt)
-        // console.log(name)
         this.showVideoDialog = true
         this.videoData={
           source:txt.org_name,

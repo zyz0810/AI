@@ -10,7 +10,7 @@
             <!--<el-option label="启用" value="1"></el-option>-->
             <!--<el-option label="禁用" value="0"></el-option>-->
           <!--</el-select>-->
-          <el-cascader ref="cascaderPublish" clearable v-model="listQuery.category_small" :options="categoryList" :show-all-levels="false" filterable :props="props" placeholder="请选择违规类型"></el-cascader>
+          <el-cascader ref="cascaderPublish" clearable v-model="listQuery.category_small" :options="categoryList" @change="changeCategory" :show-all-levels="false" filterable :props="props" placeholder="请选择违规类型"></el-cascader>
 
         </el-form-item>
         <el-form-item label="事件状态：">
@@ -125,9 +125,7 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
-
 <!--    <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>-->
-
   </div>
 </template>
 
@@ -239,10 +237,31 @@
       this.getCategory();
     },
     methods: {
+      changeCategory(val){
+        this.listQuery.category_big = val[0];
+        this.listQuery.category_small = val[1];
+      },
       getCategory() {
         departTree().then(res => {
-          this.categoryList = res.data
+          this.categoryList = this.getTreeData(res.data);
         });
+      },
+      getTreeData (data) {
+        if (data != "" || data != null) {
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].child.length < 1) {
+              // children若为空数组，则将children设为undefined
+              // if (data[i].grade == 3) {
+              //   data[i].childrens = undefined;
+              // }
+              data[i].child = undefined;
+            } else {
+              // children若不为空数组，则继续 递归调用 本方法
+              this.getTreeData(data[i].child);
+            }
+          }
+          return data;
+        }
       },
       handleFilter() {
         this.listQuery.page = 1;

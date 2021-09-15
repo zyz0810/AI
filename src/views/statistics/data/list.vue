@@ -2,28 +2,27 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form :inline="true" :model="listQuery" class="search_form">
-
         <el-form-item label="监控点名称：">
-          <el-select v-model="listQuery.status" placeholder="选择设备名称" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
+          <el-input v-model.trim="listQuery.facility_name" placeholder="请输入监控点名称" autocomplete="off" clearable/>
         </el-form-item>
         <el-form-item label="违规类型：">
-          <el-select v-model="listQuery.status" placeholder="选择违规类型" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
+          <!--<el-select v-model="listQuery.category" placeholder="选择违规类型" @change="handleFilter">-->
+          <!--<el-option label="启用" value="1"></el-option>-->
+          <!--<el-option label="禁用" value="0"></el-option>-->
+          <!--</el-select>-->
+          <el-cascader ref="cascaderPublish" clearable v-model="listQuery.category_small" :options="categoryList" @change="changeCategory" :show-all-levels="false" filterable :props="props" placeholder="请选择违规类型"></el-cascader>
+
         </el-form-item>
         <el-form-item label="事件状态：">
-          <el-select v-model="listQuery.status" placeholder="选择违规类型" @change="handleFilter">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
+          <el-select v-model="listQuery.status" placeholder="选择违规类型" clearable>
+            <!--1: '未审核', 2: '已审核'-->
+            <el-option label="未审核" :value="1"></el-option>
+            <el-option label="已审核" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="上报时间：" prop="name">
           <el-date-picker
-            v-model="listQuery.yearChoose"
+            v-model="dateTime"
             clearable
             type="daterange"
             range-separator="至"
@@ -107,6 +106,7 @@
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
   import paraView from "./components/view";
+  import {departTree} from "@/api/category";
   export default {
     name: 'parameterList',
     directives: {waves},
@@ -117,31 +117,29 @@
     },
     data() {
       return {
+        props: {
+          expandTrigger: "click",
+          value: "id",
+          label: "department_name",
+          children: "child",
+          disabled: false,
+        },
         displayType:'table',
-        showViewDialog:false,
-        viewData:{},
-        paraData:{},
-        paraLoading:false,
-        operationOption: [{
-          id: 0,
-          name: '下拉框'
-        }, {
-          id: 1,
-          name: '复选框'
-        }, {
-          id: 2,
-          name: '输入框'
-        }],
+        categoryList:[],
+
         updateBtn: true,
         enableBtn: true,
         disableBtn: true,
-        total: 16,
-        parameterValueList: [{name: ''}],
+        total: 0,
         list: [],
         listLoading: false,
         listQuery: {
-          name: '',
-          status: undefined,
+          status:'',
+          start_time:'',
+          end_time:'',
+          facility_name:'',
+          category_big:'',
+          category_small:'',
           page: 1,
           pageSize: 10
         },
@@ -163,6 +161,24 @@
       },
     },
     computed: {
+      dateTime: {
+        get () {
+          if (this.listQuery.start_time && this.listQuery.end_time) {
+            return [this.listQuery.start_time, this.listQuery.end_time];
+          } else {
+            return [];
+          }
+        },
+        set (v) {
+          if (v) {
+            this.listQuery.start_time = v[0];
+            this.listQuery.end_time = v[1];
+          } else {
+            this.listQuery.start_time = "";
+            this.listQuery.end_time = "";
+          }
+        },
+      },
       ...mapState({
         roles: state => state.user.roles,
       }),
@@ -188,9 +204,35 @@
         };
       });
       this.getList();
+      this.getCategory();
     },
     methods: {
-
+      changeCategory(val){
+        this.listQuery.category_big = val[0];
+        this.listQuery.category_small = val[1];
+      },
+      getCategory() {
+        departTree().then(res => {
+          this.categoryList = this.getTreeData(res.data);
+        });
+      },
+      getTreeData (data) {
+        if (data != "" || data != null) {
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].child.length < 1) {
+              // children若为空数组，则将children设为undefined
+              // if (data[i].grade == 3) {
+              //   data[i].childrens = undefined;
+              // }
+              data[i].child = undefined;
+            } else {
+              // children若不为空数组，则继续 递归调用 本方法
+              this.getTreeData(data[i].child);
+            }
+          }
+          return data;
+        }
+      },
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()

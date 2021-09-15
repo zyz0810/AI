@@ -4,14 +4,13 @@
     :close-on-click-modal="false"
     width="80%"
     @close="close"
-    top="10vh"
+    top="6vh"
     title="事件列表"
     class="dialogContainer"
     @open="open"
   >
     <el-table v-loading="listLoading" :data="list" :height="tableHeight"
               element-loading-text="拼命加载中" fit ref="tableList">
-
       <el-table-column type="selection" width="80" align="center"></el-table-column>
       <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
       <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
@@ -56,9 +55,7 @@
         required: true,
         type: Object,
         default: {
-          source: "",
-          address: "",
-          video: ""
+          id: "",
         }
       }
     },
@@ -69,6 +66,7 @@
         list: [],
         listLoading: false,
         listQuery:{
+          facility_id:'',
           page:1,
           pageSize:10,
         },
@@ -132,6 +130,7 @@
             }
           };
         });
+        this.listQuery.facility_id = this.caseData.id;
         this.getList();
       },
       close(){},
