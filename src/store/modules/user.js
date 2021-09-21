@@ -53,7 +53,7 @@ const actions = {
       login({ mobile: mobile.trim(), password: password }).then(response => {
         const { data } = response;
         // token_type  access_token
-        commit('SET_TOKEN', data.access_token);
+        commit('SET_TOKEN', data.token);
         // commit('SET_ID', response.data.id);
         // console.log(response.data.city_list);
         // commit('SET_CITY', response.data.city_list);
@@ -63,8 +63,8 @@ const actions = {
         // setCitySelected(response.data.city_list[0].id);
         // setId(response.data.id);
         // setName(response.data.name);
-        setToken(data.access_token);
-        sessionStorage.setItem("Admin-Token", JSON.stringify(data.access_token));
+        setToken(data.token);
+        sessionStorage.setItem("Admin-Token", JSON.stringify(data.token));
         resolve()
       }).catch(error => {
         reject(error)
@@ -75,7 +75,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      let role = ['admin']
+      let role = ['admin'];
       commit('SET_ROLES', role);
       resolve(role);
       // getInfo().then(response => {

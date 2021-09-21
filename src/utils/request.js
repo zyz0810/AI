@@ -92,7 +92,7 @@ service.interceptors.response.use(
     if (res.code === 1) {
       return res
     }
-    if (res.code === 401) {
+    if (res.code === -1) {
       // to re-login
       // MessageBox.confirm('您已注销，您可以取消以停留在此页，或重新登录', '确认注销', {
       //   confirmButtonText: '重新登录',
