@@ -100,7 +100,7 @@
 </template>
 
 <script>
-  import {collectList, } from '@/api/monitor'
+  import {categoryList, collectList,} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -120,8 +120,8 @@
         props: {
           expandTrigger: "click",
           value: "id",
-          label: "department_name",
-          children: "child",
+          label: "name",
+          children: "parent_list",
           disabled: false,
         },
         displayType:'table',
@@ -212,8 +212,12 @@
         this.listQuery.category_small = val[1];
       },
       getCategory() {
-        departTree().then(res => {
-          this.categoryList = this.getTreeData(res.data);
+        // departTree().then(res => {
+        //   this.categoryList = this.getTreeData(res.data);
+        // });
+        categoryList({page:1,pageSize:99999}).then(res=>{
+          this.categoryList = res.data.data
+
         });
       },
       getTreeData (data) {

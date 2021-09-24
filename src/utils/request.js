@@ -109,40 +109,16 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-    } else if (res.code === 3) {
+    } else if (res.code === -2) {
       Message({
-        message: '您没此权限',
+        message: res.message,
         type: 'error',
         duration: 5 * 1000
       })
-    } else if (res.code === 4) {
-      Message({
-        message: '该数据不存在',
-        type: 'error',
-        duration: 5 * 1000
-      })
-    } else if (res.code === 5) {
-      Message({
-        message: '该数据已存在',
-        type: 'error',
-        duration: 5 * 1000
-      })
-    } else if (res.code === 6) {
-      // MessageBox.confirm('该数据有关联数据，不能删除', '提示', {
-      //   confirmButtonText: '确定',
-      //   showCancelButton:false,
-      //   type: 'warning'
-      // });
-      Message({
-        message: '该数据有关联数据，不能删除',
-        type: 'error',
-        duration: 5 * 1000
-      })
-      return res
-    } else {
+    }  else {
       console.log('错误')
       Message({
-        message: res.resp_msg || '获取数据失败',
+        message: res.message || '获取数据失败',
         type: 'error',
         duration: 5 * 1000
       })

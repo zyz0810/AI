@@ -23,10 +23,8 @@
         <el-form-item label="审核意见：">
           <!--1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'-->
           <el-select v-model="listQuery.is_audited" placeholder="选择违规类型" clearable>
-            <el-option label="立案" :value="1"></el-option>
-            <el-option label="暂不立案" :value="2"></el-option>
-            <el-option label="在学习" :value="3"></el-option>
-            <el-option label="结案" :value="4"></el-option>
+            <el-option label="通过" :value="1"></el-option>
+            <el-option label="未通过" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="事件等级：">
@@ -116,7 +114,7 @@
 </template>
 
 <script>
-  import {collectList, } from '@/api/monitor'
+  import {categoryList, collectList,} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -134,8 +132,8 @@
         props: {
           expandTrigger: "click",
           value: "id",
-          label: "department_name",
-          children: "child",
+          label: "name",
+          children: "parent_list",
           disabled: false,
         },
         displayType:'table',
@@ -143,21 +141,10 @@
         viewData:{},
         paraData:{},
         paraLoading:false,
-        operationOption: [{
-          id: 0,
-          name: '下拉框'
-        }, {
-          id: 1,
-          name: '复选框'
-        }, {
-          id: 2,
-          name: '输入框'
-        }],
         updateBtn: true,
         enableBtn: true,
         disableBtn: true,
-        total: 16,
-        parameterValueList: [{name: ''}],
+        total: 0,
         categoryList:[],
         list: [],
         listLoading: false,
@@ -167,21 +154,8 @@
           page: 1,
           pageSize: 10
         },
-        updateId: undefined,
         dialogFormVisible: false,
-        temp: {
-          // id: undefined,
-          status: 1,
-          name: '',
-          orders: '',
-          isRequired: 0,
-          operatingMode: 0,
-          parameterValueList: [],
-        },
-        dialogStatus: '',
-        rules: {
-          name: [{required: true, message: '请输入名称', trigger: 'change'}],
-        },
+
         tableHeight:'100'
       }
     },
@@ -251,8 +225,12 @@
         this.listQuery.category_small = val[1];
       },
       getCategory() {
-        departTree().then(res => {
-          this.categoryList = this.getTreeData(res.data);
+        // departTree().then(res => {
+        //   this.categoryList = this.getTreeData(res.data);
+        // });
+        categoryList({page:1,pageSize:99999}).then(res=>{
+          this.categoryList = res.data.data
+
         });
       },
       getTreeData (data) {

@@ -14,7 +14,7 @@
       <el-tabs type="card" v-model="activeName" style="width: 360px;">
         <el-tab-pane label="最新事件" name="first">
           <ul class="img_list w100 bg_white">
-            <li v-for="(item,index) in list" :key="index" class="mb_20">
+            <li v-for="(item,index) in list" :key="index" class="mb_20" @click="handleView(item)">
               <div class="img_list_top clr_white">
                 <img class="img_list_img" :src="item.images">
                 <span class="block f14 type_tag">{{item.category_big_name}}</span>
@@ -118,6 +118,9 @@
       window.handleVideo = this.handleVideo;
     },
     methods: {
+      handleView(row){
+        this.$router.push({path:'/workOrder/policeView',query: {id:row.id,status:row.status}})
+      },
       getNew(){
         collectList(this.listQuery).then(res => {
           this.list = res.data.data

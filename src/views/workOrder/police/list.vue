@@ -55,8 +55,8 @@
         <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
-            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView(scope.row)"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleExport"></i>
+            <i class="iconfont icon-xiangqing baseColor inlineBlock" @click.stop="handleView(scope.row)"></i>
+            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click.stop="handleExport"></i>
           </template>
         </el-table-column>
       </el-table>
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-  import {collectList, } from '@/api/monitor'
+  import {categoryList, collectList,} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -109,8 +109,8 @@
         props: {
           expandTrigger: "click",
           value: "id",
-          label: "department_name",
-          children: "child",
+          label: "name",
+          children: "parent_list",
           disabled: false,
         },
         displayType:'table',
@@ -199,8 +199,12 @@
         this.listQuery.category_small = val[1];
       },
       getCategory() {
-        departTree().then(res => {
-          this.categoryList = this.getTreeData(res.data);
+        // departTree().then(res => {
+        //   this.categoryList = this.getTreeData(res.data);
+        // });
+        categoryList({page:1,pageSize:99999}).then(res=>{
+          this.categoryList = res.data.data
+
         });
       },
       getTreeData (data) {
