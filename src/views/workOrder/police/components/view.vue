@@ -41,7 +41,7 @@
        <div style="width: 70%;">
          <p class="f20 bold mt_20 mb_10">人工审核信息</p>
          <div class="bg_white p20">
-           <el-form ref="dataForm" :inline="true" :rules="rules" :model="temp" label-width="120px">
+           <el-form :inline="true" :rules="rules" :model="temp" label-width="120px">
              <el-form-item label="问题类型：" prop="city_id">{{formData.category_big_name}}</el-form-item>
              <el-form-item label="上报时间：" prop="city_id">{{$moment(formData.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</el-form-item>
              <el-form-item label="来源设备：" prop="city_id">{{formData.facility_name}}</el-form-item>
@@ -53,24 +53,26 @@
                  <el-radio :label="2">不通过</el-radio>
                </el-radio-group>
              </el-form-item>
-             <el-form-item label="违规类型：" prop="category_small">
+             <el-form-item label="违规类型：" prop="category_big">
 <!--               <el-select v-model="temp.category_big" placeholder="选择辖区">-->
 <!--                 <el-option v-for="item in categoryList" :label="item.name" :value="item.id" :key="item.id"></el-option>-->
 <!--               </el-select>-->
 
                <el-cascader ref="cascaderPublish"
-                            v-model="temp.category_small"
+                            v-model="temp.categoryArr"
                             :options="categoryList"
                             :show-all-levels="false"
                             filterable
                             :props="props"
+                            @change="changeCategory"
                             placeholder="请选择"></el-cascader>
              </el-form-item>
              <el-form-item label="报警点位：">
                {{formData.address}}
 <!--               <el-input v-model.trim="temp.product" placeholder="请输入报警点位" autocomplete="off" suffix-icon="el-icon-search" clearable/>-->
              </el-form-item>
-             <el-form-item label="中队：" prop="city_id">
+             <el-form-item label="中队：">
+               {{formData.depart_name}}
                <!--<el-select v-model="temp.city_id" placeholder="选择中队" :disabled="true">-->
                  <!--<el-option v-for="option in cityList" :label="option.province+option.city+option.area" :value="option.id" :key="option.id"></el-option>-->
                <!--</el-select>-->
@@ -83,7 +85,7 @@
              <el-form-item label="备注：" prop="remark">
                <el-input v-model.trim="temp.remark" placeholder="请输入备注" type="textarea" autocomplete="off" :disabled="formData.status != 1" clearable/>
              </el-form-item>
-             <el-form-item label="事件等级：" prop="city_id">
+             <el-form-item label="事件等级：" prop="is_important">
                <el-radio-group v-model="temp.is_important" :disabled="formData.status != 1">
                  <el-radio :label="1">一般案件</el-radio>
                  <el-radio :label="2">重大案件</el-radio>
@@ -95,7 +97,7 @@
              </el-form-item>
            </el-form>
            <div class="text-center mt_20 mb_20">
-             <el-button type="primary" v-if="this.formData.status == 1" @click="onSubmit" :loading="paraLoading">审核</el-button>
+             <el-button type="primary" v-if="formData.status == 1" @click="onSubmit" :loading="paraLoading">审核</el-button>
              <el-button type="primary" plain @click="getCase(0)">上一条</el-button>
              <el-button type="primary" plain @click="getCase(1)">下一条</el-button>
            </div>
@@ -205,6 +207,7 @@
           longitude:'',
           facility_name:'',
           status:'',
+          depart_name:'',
           // install_place:'',
           // pic_url:'',
           images:'',
@@ -215,13 +218,15 @@
         temp: {
           id:'',
           is_audited:1,
-          category_small:[],
+          categoryArr:[],
+          category_big:'',
+          category_small:'',
           remark: '',
           is_important:1,
           ids:''
         },
         rules: {
-          // name: [{ required: true, message: '请输入设备名称', trigger: 'change' }],
+          category_big: [{ required: true, message: '请选择类别', trigger: 'change' }],
           // version: [{ required: true, message: '请输入设备型号', trigger: 'change' }],
           // facility_no: [{ required: true, message: '请输入设备编号', trigger: 'change' }],
           // imei: [{ required: true, message: '请输入设备IMEI', trigger: 'change' }],
@@ -245,6 +250,10 @@
       this.getCategory();
     },
     methods: {
+      changeCategory(val){
+        this.temp.category_big = val[0];
+        this.temp.category_small = val[1];
+      },
       disabledFn () {
         if (this.formData.status == 1) {
           return true;
@@ -252,15 +261,18 @@
           return false;
         }
       },
-      // changeCategory(val){
-      //   console.log(val)
-      // },
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status, collect_time,community_id_name,address, latitude,longitude,images,list} = res.data
-          this.formData = { id,category_big_name,status, collect_time,community_id_name,address, latitude,longitude,images,list}
+          const { id,category_big_name,status, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
+          console.log(categoryArr);
+          this.formData = { id,category_big_name,status, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
+          this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
+        });
+        this.$nextTick(function () {
+          this.$refs['dataForm'].clearValidate();
         });
       },
       getCategory(){
@@ -300,9 +312,12 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
-          const { id, category_big_name,status,collect_time,community_id_name,address,facility_name, latitude,longitude,images,list} = res.data
-          this.formData = { id, category_big_name,status, collect_time,community_id_name,address,facility_name, latitude,longitude,images,list}
+          const { id,category_big_name,status, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
+          this.formData = { id,category_big_name,status, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,};
+          this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
+
         });
       },
 
@@ -322,22 +337,25 @@
             console.log(this.temp)
             let temp = JSON.parse(JSON.stringify(this.temp))
             let form;
-            temp.category_small = temp.category_small[temp.category_small.length - 1];
+            // temp.category_big = temp.category_small[temp.category_small.length - 1]
+            // temp.category_small = temp.category_small[temp.category_small.length - 1];
             if(this.checked == true){
               if(this.formData.list.length > 0){
                 temp.ids = this.formData.list.join(',')
               }
-              const {id,status,category_small,remark,is_important,ids} = temp;
-              form = {id,status,category_small,remark,is_important,ids}
+              const {id,status,category_big,category_small,remark,is_important,ids,is_audited} = temp;
+              form = {id,status,category_big,category_small,remark,is_important,ids,is_audited}
             }else{
-              const {id,status,category_small,remark,is_important} = temp;
-              form = {id,status,category_small,remark,is_important}
+              const {id,status,category_big,category_small,remark,is_important,is_audited} = temp;
+              form = {id,status,category_big,category_small,remark,is_important,is_audited}
             }
             collectEdit(form).then((res) => {
               setTimeout(()=>{
                 this.paraLoading = false
               },1000)
               if(res.code == 1) {
+                console.log(1111)
+                this.getView();
                 this.$message({
                   message: res.message,
                   type: 'success'
@@ -349,30 +367,6 @@
           }
         })
       },
-
-      updateData() {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.paraLoading = true
-            editFacility(this.temp).then((res) => {
-              setTimeout(()=>{
-                this.paraLoading = false
-              },1000)
-              if(res.code == 1) {
-                this.$emit('insertList');
-                this.showViewDialog = false;
-                this.$message({
-                  message: res.message,
-                  type: 'success'
-                });
-              }
-            }).catch(() => {
-              this.paraLoading = false;
-            });
-          }
-        })
-      },
-
     }
   }
 </script>

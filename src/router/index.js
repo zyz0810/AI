@@ -174,7 +174,8 @@ export const asyncRoutes = [
       {
         path: 'intelligenceView',
         hidden:true,
-        component: () => import('@/views/statistics/intelligence/components/view'),
+        // component: () => import('@/views/statistics/intelligence/components/view'),
+        component: () => import('@/views/workOrder/police/components/view'),
         name: '事件详情',
         meta: {
           title: '事件详情',
@@ -207,7 +208,8 @@ export const asyncRoutes = [
       },{
         path: 'dataView',
         hidden:true,
-        component: () => import('@/views/statistics/data/components/view'),
+        // component: () => import('@/views/statistics/data/components/view'),
+        component: () => import('@/views/workOrder/police/components/view'),
         name: '重复事件查询详情',
         meta: {
           title: '重复事件查询详情',
@@ -245,7 +247,8 @@ export const asyncRoutes = [
       },{
         path: 'verifyView',
         hidden:true,
-        component: () => import('@/views/devOps/verify/components/view'),
+        // component: () => import('@/views/devOps/verify/components/view'),
+        component: () => import('@/views/workOrder/police/components/view'),
         name: '示范小区详情',
         meta: {
           title: '示范小区详情',

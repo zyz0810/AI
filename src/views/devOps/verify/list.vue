@@ -24,7 +24,7 @@
           <!--1: '立案', 2: '暂不立案',3: '在学习', 4: '结案'-->
           <el-select v-model="listQuery.is_audited" placeholder="选择违规类型" clearable>
             <el-option label="通过" :value="1"></el-option>
-            <el-option label="未通过" :value="2"></el-option>
+            <el-option label="不通过" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="事件等级：">
@@ -60,7 +60,7 @@
         <el-table-column type="selection" width="80" align="center"></el-table-column>
         <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
         <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center" prop="community_name"></el-table-column>
         <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
         <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
         <el-table-column label="上报时间" align="center" prop="collect_time">
