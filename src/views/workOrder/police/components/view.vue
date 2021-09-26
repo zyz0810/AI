@@ -264,10 +264,10 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,facility_name, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           console.log(categoryArr);
-          this.formData = { id,category_big_name,status, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
+          this.formData = { id,category_big_name,status,facility_name, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
         });
@@ -312,9 +312,9 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
-          const { id,category_big_name,status, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,facility_name, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
-          this.formData = { id,category_big_name,status, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,};
+          this.formData = { id,category_big_name,status,facility_name, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
 
