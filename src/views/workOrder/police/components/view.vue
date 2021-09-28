@@ -11,9 +11,9 @@
         <ul class="img_list flex" v-show="tabIndex == 0">
           <li >
             <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="formData.images">
+              <img class="img_list_img" :src="formData.pic_url">
               <span class="block f15 type_tag">{{formData.category_big_name}}</span>
-              <p class="f15 time">{{formData.collect_time}}</p>
+              <p class="f15 time">{{$moment(formData.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
             </div>
           </li>
           <!--<li v-for="(item,index) in imgList" :key="index">-->
@@ -117,7 +117,7 @@
 </template>
 
 <script>
-  import {collectDetail,collectEdit,categoryList,nextDetailCollect} from '@/api/monitor'
+  import {collectDetail,collectEdit,categoryList,nextDetailCollect,getNowurl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive

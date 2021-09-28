@@ -275,6 +275,7 @@
         this.showVideoDialog = true
         this.videoData={
           source:txt.org_name,
+          code:txt.index_code,
           address:txt.name,
           video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
         }

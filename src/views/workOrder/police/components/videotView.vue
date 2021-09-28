@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {getNowurl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -122,7 +122,7 @@
       },
       close(){},
       getList(){
-        paraValueList(this.listQuery).then(res=>{
+        getNowurl(this.listQuery).then(res=>{
           this.list = res.data.data;
           this.total = res.data.count
         });

@@ -126,3 +126,25 @@ export function delCollect(data) {
     data: Qs.stringify(data)
   })
 }
+/* 获取实时监控
+ * camera_index_code 监控点编码
+ */
+export function getNowurl(data) {
+  return request({
+    url:'/ai/Hikvision/getNowurl',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
+/* 获取历史监控数据
+ * camera_index_code 监控点编码
+ * begin_time 	2021-09-08 08：58：46
+ * end_time  2021-09-08 08：58：46
+ */
+export function getHistoryUrl(data) {
+  return request({
+    url:'/ai/Hikvision/getHistoryUrl',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}

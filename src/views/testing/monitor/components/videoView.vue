@@ -32,7 +32,7 @@
 </template>
 
 <script>
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {getNowurl,getHistoryUrl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -53,6 +53,7 @@
         required: true,
         type: Object,
         default: {
+          code:'',
           source: "",
           address: "",
           video: ""
@@ -93,7 +94,19 @@
 
     methods: {
       open(){
-        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address
+        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address;
+        this.getData();
+        this.getHistory();
+      },
+      getData(){
+        getNowurl({camera_index_code:this.caseData.code,protocol:'hls'}).then(res=>{
+
+        });
+      },
+      getHistory(){
+        getHistoryUrl({camera_index_code:this.caseData.code,begin_time:'',end_time:''}).then(res=>{
+
+        });
       },
       close(){},
       initVideo() {
