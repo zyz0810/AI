@@ -100,7 +100,7 @@
       <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
         <li v-for="(item,index) in list" :key="index">
           <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.images">
+            <img class="img_list_img" :src="item.pic_url">
             <span class="block f14 type_tag">{{item.category_big_name}}</span>
             <!--//事件状态-->
             <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>

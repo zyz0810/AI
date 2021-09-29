@@ -125,8 +125,8 @@
               },
               color: ['rgb(84,111,198)','rgb(238,102,102)',],
               data: [
-                {value: 125, name: '通过'},
-                {value: 125, name: '不通过'},
+                {value: 86, name: '通过'},
+                {value: 14, name: '不通过'},
               ]
             }
           ]
@@ -141,7 +141,7 @@
           },
           legend: {
             bottom:'0',
-            data:['总审核数','其它区域审核数','滨康二区审核数']
+            data:['总审核数']
           },
           tooltip : {
             trigger: 'axis',
@@ -192,21 +192,9 @@
           series: [{
             name:'总审核数',
             smooth:false,
-            data: [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0,],
+            data: [0, 10, 8, 9, 6, 4, 2,0, 6, 9, 8, 5, 2,],
             type: 'line',
             color:'rgba(170,138,187,1)'
-          }, {
-            name:'其它区域审核数',
-            smooth:false,
-            data: [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0,],
-            type: 'line',
-            color:'rgba(234,109,63,1)'
-          }, {
-            name:'滨康二区审核数',
-            smooth:false,
-            data: [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0,],
-            type: 'line',
-            color:'rgba(61,232,127,1)'
           }]
         },
         chartDataTwo: {
@@ -297,8 +285,8 @@
           year: '',
         },
         echartData: {
-          count:[70,10,],
-          name: ['其它区域','滨康二区',],
+          count:[121,108,120],
+          name: ['西兴中队','浦沿中队','长河中队'],
         },
       }
     },

@@ -9,33 +9,27 @@
     <div class="cont">
       <div class="mt_20">
         <ul class="img_list flex" v-show="tabIndex == 0">
-          <li >
+          <li style="width: auto;">
             <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="formData.pic_url">
+              <img class="img_list_img" :src="formData.pic_url" style="width: auto;">
               <span class="block f15 type_tag">{{formData.category_big_name}}</span>
               <p class="f15 time">{{$moment(formData.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
             </div>
           </li>
-          <!--<li v-for="(item,index) in imgList" :key="index">-->
+        </ul>
+        <!--<ul class="img_list flex video_list" v-show="tabIndex == 1">-->
+          <!--<li v-for="(item,index) in videoList" :key="index">-->
             <!--<div class="img_list_top clr_white">-->
               <!--<img class="img_list_img" :src="item.image">-->
-              <!--<span class="block f15 type_tag">{{item.type | filtersType}}</span>-->
-              <!--<p class="f15 time">{{item.time}}</p>-->
+              <!--<p class="f15 name">-->
+                <!--<span>设备名称：ST1241</span>-->
+                <!--<span>位置信息：滨和路152号</span>-->
+              <!--</p>-->
+              <!--<p class="f15 time">2020-12-18 21:12:09</p>-->
             <!--</div>-->
           <!--</li>-->
-        </ul>
-        <ul class="img_list flex video_list" v-show="tabIndex == 1">
-          <li v-for="(item,index) in videoList" :key="index">
-            <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="item.image">
-              <p class="f15 name">
-                <span>设备名称：ST1241</span>
-                <span>位置信息：滨和路152号</span>
-              </p>
-              <p class="f15 time">2020-12-18 21:12:09</p>
-            </div>
-          </li>
-        </ul>
+        <!--</ul>-->
+        <div v-show="tabIndex == 1" style="height: 20vh;">暂无视频</div>
       </div>
      <div class="flex">
        <div style="width: 70%;">
@@ -111,13 +105,19 @@
     </div>
 
     <repeatView :showDialog.sync="showViewDialog" :repeatData="repeatData"></repeatView>
-    <videoView :showDialog.sync="showVideoDialog" :videoData="videoData"></videoView>
-
+    <!--<videoView :showDialog.sync="showVideoDialog" :videoData="videoData"></videoView>-->
+    <div v-show="showVideoDialog" class="dashboard-video-player-box">
+      <div id="dashboardVideoPlayer" class="dashboard-video-player">
+        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
+        <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
+        <!--</video>-->
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import {collectDetail,collectEdit,categoryList,nextDetailCollect,getNowurl} from '@/api/monitor'
+  import {collectDetail,collectEdit,categoryList,nextDetailCollect,getNowurl, getHistoryUrl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -208,10 +208,12 @@
           facility_name:'',
           status:'',
           depart_name:'',
+          index_code:'',
           // install_place:'',
           // pic_url:'',
           images:'',
-          list:[]
+          list:[],
+          pic_url:''
         },
         tabIndex:0,
         paraLoading:false,
@@ -234,7 +236,9 @@
           // images: [{ required: true, message: '请上传安装照片', trigger: 'change' }],
           // product: [{ required: true, message: '请输入生产地', trigger: 'change' }],
         },
-        categoryList:[]
+        categoryList:[],
+        playVideoUri:'',
+        player: null
       }
     },
 
@@ -245,11 +249,92 @@
       },
     },
     mounted() {
-      this.onLoad()
+      this.onLoad();
       this.getView();
       this.getCategory();
+      window.closeVideoDialog = () => {
+        this.handleVideoClose()
+      }
+
+      // this.$once('hook:beforeDestroy', () => {
+      //   this.player.dispose();
+      // })
+      this.initPlayer()
     },
     methods: {
+      handleVideoClose() {
+        this.player.dispose()
+        $('#myVideo').remove()
+        $('#dashboardVideoPlayer').html('')
+        this.player = null
+        this.showVideoDialog = false
+        this.playVideoUri = ''
+      },
+      initPlayer() {
+        this.$nextTick(() => {
+          document.addEventListener('keyup', (e) => {
+            if (e.keyCode === 27) {
+              this.handleCloseKeyDown(e) // 事件名
+            }
+          })
+        })
+      },
+      handleCloseKeyDown(e) {
+        if (this.dialogVisible && e.keyCode === 27) {
+          this.player.dispose()
+          $('#myVideo').remove()
+          $('#dashboardVideoPlayer').html('')
+          this.player = null
+          this.showVideoDialog = false
+          this.playVideoUri = ''
+        }
+      },
+
+      playVideo(uri) {
+        this.playVideoUri = uri;
+        // this.dialogVisible = true
+        $('#dashboardVideoPlayer').append(
+          `<div style="position: relative;width: 100%;height: 100%;">
+              <i class="el-icon-error"
+                 onclick="closeVideoDialog()"
+                 style="position: absolute;
+                 right: 10px;
+                 top: 10px;
+                 z-index: 999;
+                 color: #fff;
+                 cursor: pointer;
+                 font-size: 28px;
+              "></i>
+              <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
+            <source id="source" src="rtsp://10.7.132.108:65/BSwvVkAUrG6XAMhIEeIMYb66A84s" type="rtsp/flv">
+
+            </video></div>`
+        )
+        window.setTimeout(() => {
+          this.player = videojs('myVideo', {
+            muted: true,
+            controls: true,
+            preload: 'auto'
+          })
+          // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
+          // <!--rtsp://10.32.54.38:554/openUrl/ePBOw6I-->
+          this.player.play()
+          console.log('获取视频')
+          console.log(this.player)
+
+        }, 1000)
+
+
+
+
+        /* this.player.src({
+          src: this.videos[0].url,
+          type: 'application/x-mpegURL',
+          withCredentials: false
+        })*/
+
+        // this.player.play()
+      },
       changeCategory(val){
         this.temp.category_big = val[0];
         this.temp.category_small = val[1];
@@ -264,10 +349,10 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,facility_name, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, pic_url,collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           console.log(categoryArr);
-          this.formData = { id,category_big_name,status,facility_name, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_name,pic_url,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
         });
@@ -298,8 +383,26 @@
         this.map.addOverLay(marker);
       },
       clickVideo(){
+        // this.showVideoDialog = true
+        this.getData();
+        // this.getHistory();
         this.showVideoDialog = true
+        // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
+        this.playVideo();
       },
+
+      getData(){
+        getNowurl({camera_index_code:this.formData.index_code,protocol:'hls'}).then(res=>{
+
+        });
+      },
+      getHistory(){
+        getHistoryUrl({camera_index_code:this.formData.index_code,begin_time:'',end_time:''}).then(res=>{
+
+        });
+      },
+
+
       handleRepeat(row){
         this.showViewDialog = true
         this.repeatData = {
@@ -312,12 +415,12 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
-          const { id,category_big_name,status,facility_name, collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,pic_url,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
-          this.formData = { id,category_big_name,status,facility_name, depart_name,collect_time,community_id_name,address, latitude,longitude,images,list,};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_name,pic_url,collect_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
-
+          this.getHistory();
         });
       },
 
@@ -371,10 +474,71 @@
   }
 </script>
 <style lang="scss" scoped>
+  .dashboard-video-player {
+    position: absolute;
+    width: 900px;
+    height: 600px;
+    background: #fff;
+    top: 50%;
+    left: 50%;
+    z-index:999;
+    margin-left: -450px;
+    margin-top: -300px;
+
+    .video-js {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .dashboard-video-player-box {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(50, 50, 50, 0.2);
+    z-index: 9999;
+
+    .el-icon-error {
+      position: absolute;
+      right: 26.7%;
+      top: 18.5%;
+      font-size: 32px;
+      color: #ccc;
+      cursor: pointer;
+      z-index: 999;
+
+      &:hover {
+        color: #f0f0f0;
+        font-size: 34px;
+      }
+    }
+
+    .dashboard-video-player {
+      position: absolute;
+      width: 900px;
+      height: 600px;
+      background: #fff;
+      top: 50%;
+      left: 50%;
+      margin-left: -450px;
+      margin-top: -300px;
+      z-index:999;
+      .video-js {
+        height: 100%;
+        width: 100%;
+      }
+    }
+  }
   .cont{
     /*height: calc(100vh - 86px);*/
     height: 750px;
     overflow: auto;
+  }
+  .navHidden{
+    .sidebar-container{
+      display: none;
+    }
   }
   .warning_tab{
     span{

@@ -38,8 +38,12 @@ Vue.use(directive)
 Vue.use(Element, {
   size: Cookies.get('size') || 'small' // set element-ui default size 	medium / small / mini
 })
+const hls =require('videojs-contrib-hls')
+Vue.use(hls)
 
-
+import video from 'video.js';
+import 'videojs-flash'
+Vue.prototype.$video = video;
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])

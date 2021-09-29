@@ -221,45 +221,45 @@ export const asyncRoutes = [
       },
     ]
   },
-  {
-    path: '/devOps',
-    component: Layout,
-    redirect: 'noRedirect',
-    // name: '示范小区',
-    meta: {
-      // title: '示范小区',
-      icon: 'iconfont icon-xingxing',
-      roles: [
-        'admin',
-      ]
-    },
-    children: [
-      {
-        path: 'verify',
-        component: () => import('@/views/devOps/verify/list'),
-        name: 'verifyList',
-        meta: {
-          title: '示范小区',
-          roles: [
-            'admin',
-          ]
-        }
-      },{
-        path: 'verifyView',
-        hidden:true,
-        // component: () => import('@/views/devOps/verify/components/view'),
-        component: () => import('@/views/workOrder/police/components/view'),
-        name: '示范小区详情',
-        meta: {
-          title: '示范小区详情',
-          activeMenu: '/devOps/verify',
-          roles: [
-            'admin',
-          ]
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/devOps',
+  //   component: Layout,
+  //   redirect: 'noRedirect',
+  //   // name: '示范小区',
+  //   meta: {
+  //     // title: '示范小区',
+  //     icon: 'iconfont icon-xingxing',
+  //     roles: [
+  //       'admin',
+  //     ]
+  //   },
+  //   children: [
+  //     {
+  //       path: 'verify',
+  //       component: () => import('@/views/devOps/verify/list'),
+  //       name: 'verifyList',
+  //       meta: {
+  //         title: '示范小区',
+  //         roles: [
+  //           'admin',
+  //         ]
+  //       }
+  //     },{
+  //       path: 'verifyView',
+  //       hidden:true,
+  //       // component: () => import('@/views/devOps/verify/components/view'),
+  //       component: () => import('@/views/workOrder/police/components/view'),
+  //       name: '示范小区详情',
+  //       meta: {
+  //         title: '示范小区详情',
+  //         activeMenu: '/devOps/verify',
+  //         roles: [
+  //           'admin',
+  //         ]
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: '/system',
     component: Layout,

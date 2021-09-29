@@ -16,7 +16,7 @@
           <ul class="img_list w100 bg_white">
             <li v-for="(item,index) in list" :key="index" class="mb_20" @click="handleView(item)">
               <div class="img_list_top clr_white">
-                <img class="img_list_img" :src="item.images">
+                <img class="img_list_img" :src="item.pic_url">
                 <span class="block f14 type_tag">{{item.category_big_name}}</span>
                 <!--//事件状态-->
                 <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
@@ -36,9 +36,9 @@
 <!--    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>-->
     <div v-show="showVideoDialog" class="dashboard-video-player-box">
       <div id="dashboardVideoPlayer" class="dashboard-video-player">
-        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" data-setup="{}">
-          <source v-if="playVideoUri" id="source" :src="playVideoUri" autoplay type="application/x-mpegURL">
-        </video>-->
+        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
+          <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
+        <!--</video>-->
       </div>
     </div>
 
@@ -129,7 +129,9 @@
       window.closeVideoDialog = () => {
         this.handleVideoClose()
       }
-
+      // this.$once('hook:beforeDestroy', () => {
+      //   this.player.dispose();
+      // })
       this.initPlayer()
     },
     methods: {
@@ -162,12 +164,10 @@
       },
 
       playVideo(uri) {
-        this.playVideoUri = uri
+        this.playVideoUri = uri;
         // this.dialogVisible = true
-
-        window.setTimeout(() => {
-          $('#dashboardVideoPlayer').append(
-            `<div style="position: relative;width: 100%;height: 100%;">
+        $('#dashboardVideoPlayer').append(
+          `<div style="position: relative;width: 100%;height: 100%;">
               <i class="el-icon-error"
                  onclick="closeVideoDialog()"
                  style="position: absolute;
@@ -179,31 +179,26 @@
                  font-size: 28px;
               "></i>
               <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
-            <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
-          </video></div>`
+            <source id="source" src="rtsp://10.7.132.108:65/BSwvVkAUrG6XAMhIEeIMYb66A84s" type="rtsp/flv">
+
+            </video></div>`
           )
-
-              this.player = videojs('myVideo', {
-                muted: true,
-                controls: true,
-                preload: 'auto'
-              })
-
-              this.player.play()
-
-
-          console.log('获取事情')
+        window.setTimeout(() => {
+          this.player = videojs('myVideo', {
+            muted: true,
+            controls: true,
+            preload: 'auto'
+          })
+            // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
+            // <!--rtsp://10.32.54.38:554/openUrl/ePBOw6I-->
+          this.player.play()
+          console.log('获取视频')
           console.log(this.player)
+
         }, 1000)
 
 
-        this.player = videojs('myVideo', {
-          muted: true,
-          controls: true,
-          preload: 'auto'
-        })
 
-        this.player.play()
 
         /* this.player.src({
           src: this.videos[0].url,
@@ -379,10 +374,10 @@
       },
       handleVideo(txt){
         this.getData(txt);
-        this.getHistory(txt);
+        // this.getHistory(txt);
         this.showVideoDialog = true
-        this.playVideo('rtsp://10.2.145.79:554/openUrl/3whQVPi');
-
+        // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
+        this.playVideo();
         this.videoData={
           source:txt.org_name,
           code:txt.index_code,
