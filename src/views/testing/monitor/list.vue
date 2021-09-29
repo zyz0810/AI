@@ -33,13 +33,21 @@
       </el-tabs>
     </div>
     <caseView :showDialog.sync="showViewDialog" :caseData="caseData"></caseView>
-    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
+<!--    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>-->
+    <div v-show="showVideoDialog" class="dashboard-video-player-box">
+      <div id="dashboardVideoPlayer" class="dashboard-video-player">
+        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" data-setup="{}">
+          <source v-if="playVideoUri" id="source" :src="playVideoUri" autoplay type="application/x-mpegURL">
+        </video>-->
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
   import echarts from 'echarts'
-  import {pointList,collectList} from '@/api/monitor'
+  import {pointList, collectList, getNowurl, getHistoryUrl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -88,6 +96,8 @@
         centerLatitude:'30.20835',//中心纬度
         centerLongitude:'120.21194',//中心经度
         activeId:'',
+        playVideoUri:'',
+        player: null
       }
     },
 
@@ -116,8 +126,95 @@
       this.getNew();
       window.handleCase = this.handleCase;
       window.handleVideo = this.handleVideo;
+      window.closeVideoDialog = () => {
+        this.handleVideoClose()
+      }
+
+      this.initPlayer()
     },
     methods: {
+      handleVideoClose() {
+        this.player.dispose()
+        $('#myVideo').remove()
+        $('#dashboardVideoPlayer').html('')
+        this.player = null
+        this.showVideoDialog = false
+        this.playVideoUri = ''
+      },
+      initPlayer() {
+        this.$nextTick(() => {
+          document.addEventListener('keyup', (e) => {
+            if (e.keyCode === 27) {
+              this.handleCloseKeyDown(e) // 事件名
+            }
+          })
+        })
+      },
+      handleCloseKeyDown(e) {
+        if (this.dialogVisible && e.keyCode === 27) {
+          this.player.dispose()
+          $('#myVideo').remove()
+          $('#dashboardVideoPlayer').html('')
+          this.player = null
+          this.showVideoDialog = false
+          this.playVideoUri = ''
+        }
+      },
+
+      playVideo(uri) {
+        this.playVideoUri = uri
+        // this.dialogVisible = true
+
+        window.setTimeout(() => {
+          $('#dashboardVideoPlayer').append(
+            `<div style="position: relative;width: 100%;height: 100%;">
+              <i class="el-icon-error"
+                 onclick="closeVideoDialog()"
+                 style="position: absolute;
+                 right: 10px;
+                 top: 10px;
+                 z-index: 999;
+                 color: #fff;
+                 cursor: pointer;
+                 font-size: 28px;
+              "></i>
+              <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
+            <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
+          </video></div>`
+          )
+
+              this.player = videojs('myVideo', {
+                muted: true,
+                controls: true,
+                preload: 'auto'
+              })
+
+              this.player.play()
+
+
+          console.log('获取事情')
+          console.log(this.player)
+        }, 1000)
+
+
+        this.player = videojs('myVideo', {
+          muted: true,
+          controls: true,
+          preload: 'auto'
+        })
+
+        this.player.play()
+
+        /* this.player.src({
+          src: this.videos[0].url,
+          type: 'application/x-mpegURL',
+          withCredentials: false
+        })*/
+
+        // this.player.play()
+      },
+
+
       handleView(row){
         this.$router.push({path:'/workOrder/policeView',query: {id:row.id,status:row.status}})
       },
@@ -166,7 +263,16 @@
         // };
 
       },
+      getData(txt){
+        getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
 
+        });
+      },
+      getHistory(txt){
+        getHistoryUrl({camera_index_code:txt.index_code,begin_time:'',end_time:''}).then(res=>{
+
+        });
+      },
       getPoint(){
         pointList({type:'allList'}).then(res=>{
           this.pointList = res.data;
@@ -272,7 +378,11 @@
         this.caseData = {id:txt}
       },
       handleVideo(txt){
+        this.getData(txt);
+        this.getHistory(txt);
         this.showVideoDialog = true
+        this.playVideo('rtsp://10.2.145.79:554/openUrl/3whQVPi');
+
         this.videoData={
           source:txt.org_name,
           code:txt.index_code,
@@ -289,6 +399,62 @@
 </script>
 <style lang="scss" scoped>
   @import './../../../styles/variables.scss';
+  .dashboard-video-player {
+    position: absolute;
+    width: 900px;
+    height: 600px;
+    background: #fff;
+    top: 50%;
+    left: 50%;
+    z-index:999;
+    margin-left: -450px;
+    margin-top: -300px;
+
+    .video-js {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .dashboard-video-player-box {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(50, 50, 50, 0.2);
+    z-index: 9999;
+
+    .el-icon-error {
+      position: absolute;
+      right: 26.7%;
+      top: 18.5%;
+      font-size: 32px;
+      color: #ccc;
+      cursor: pointer;
+      z-index: 999;
+
+      &:hover {
+        color: #f0f0f0;
+        font-size: 34px;
+      }
+    }
+
+    .dashboard-video-player {
+      position: absolute;
+      width: 900px;
+      height: 600px;
+      background: #fff;
+      top: 50%;
+      left: 50%;
+      margin-left: -450px;
+      margin-top: -300px;
+      z-index:999;
+      .video-js {
+        height: 100%;
+        width: 100%;
+      }
+    }
+  }
   .app-container{
     height: calc(100vh - 110px);
     padding: 0 20px 20px;

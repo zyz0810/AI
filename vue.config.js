@@ -39,28 +39,32 @@ module.exports = {
     // before: require('./mock/mock-server.js'),
     proxy:{
       '/api':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
+        target:'http://10.32.49.115:8081',
         changeOrigin: true,
         // pathRewrite:{
         //   '^/api':'/api'
         // }
       },
       '/admin':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
+        target:'http://10.32.49.115:8081',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/job':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
+        target:'http://10.32.49.115:8081',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/ai':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
+        target:'http://10.32.49.115:8081',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
@@ -111,7 +115,14 @@ module.exports = {
         return options
       })
       .end()
-
+    config.module
+      .rule('swf')
+      .test(/\.swf$/)
+      .use('url-loader')
+      .loader('url-loader')
+      .options({
+        limit: 10000
+      })
     config
       // https://webpack.js.org/configuration/devtool/#development
       .when(process.env.NODE_ENV === 'development',
