@@ -420,7 +420,7 @@
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_name,pic_url,collect_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
-          this.getHistory();
+          // this.getHistory();
         });
       },
 
