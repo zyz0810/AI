@@ -33,14 +33,14 @@
       </el-tabs>
     </div>
     <caseView :showDialog.sync="showViewDialog" :caseData="caseData"></caseView>
-<!--    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>-->
-    <div v-show="showVideoDialog" class="dashboard-video-player-box">
-      <div id="dashboardVideoPlayer" class="dashboard-video-player">
-        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
-          <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
-        <!--</video>-->
-      </div>
-    </div>
+    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
+<!--    <div v-show="showVideoDialog" class="dashboard-video-player-box">-->
+<!--      <div id="dashboardVideoPlayer" class="dashboard-video-player">-->
+<!--        &lt;!&ndash;<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">&ndash;&gt;-->
+<!--          &lt;!&ndash;<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">&ndash;&gt;-->
+<!--        &lt;!&ndash;</video>&ndash;&gt;-->
+<!--      </div>-->
+<!--    </div>-->
 
   </div>
 </template>
@@ -373,11 +373,11 @@
         this.caseData = {id:txt}
       },
       handleVideo(txt){
-        this.getData(txt);
+        // this.getData(txt);
         // this.getHistory(txt);
         this.showVideoDialog = true
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
-        this.playVideo();
+        // this.playVideo();
         this.videoData={
           source:txt.org_name,
           code:txt.index_code,

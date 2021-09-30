@@ -9,11 +9,11 @@
     class="dialogContainer"
     @open="open"
   >
-    <!--    <p>设备来源：{{caseData.source}} <span class="m_r30">位置信息：{{caseData.address}}</span></p>-->
+<!--    <p>设备来源：{{caseData.source}} <span class="m_r30">位置信息：{{caseData.address}}</span></p>-->
     <div class="video_cont">
-      <!--      <video :src="caseData.video"></video>-->
+<!--      <video :src="caseData.video"></video>-->
       <video
-        :src="caseData.video"
+        src="https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2"
         :controls="videoOptions.controls"
         class="video-js vjs-big-play-centered vjs-fluid"
         webkit-playsinline="true"
@@ -27,21 +27,25 @@
         autoplay="autoplay"
         ref="video">
       </video>
+<!--      <video-player ref="playerObj"></video-player>-->
+<!--      <a @click="playVideo">播放视频</a>-->
     </div>
   </myDialog>
 </template>
 
 <script>
-  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
+  import {getNowurl,getHistoryUrl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
+  import VideoPlayer from './video'
   export default {
     name: 'parameterView',
     directives: { waves },
     components: {
       draggable,
-      Pagination
+      Pagination,
+      VideoPlayer
     },
     props: {
       showDialog: {
@@ -53,6 +57,7 @@
         required: true,
         type: Object,
         default: {
+          code:'',
           source: "",
           address: "",
           video: ""
@@ -92,8 +97,24 @@
     },
 
     methods: {
+      playVideo() {
+      //   this.$refs['playerObj'].videoSrc = 'rtsp://10.32.54.38:554/openUrl/ePBOw6I'
+      //   this.$refs['playerObj'].playerOptions.sources[0].src = 'rtsp://10.32.54.38:554/openUrl/ePBOw6I'
+      },
       open(){
-        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address
+        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address;
+        // this.getData();
+        // this.getHistory();
+      },
+      getData(){
+        getNowurl({camera_index_code:this.caseData.code,protocol:'hls'}).then(res=>{
+
+        });
+      },
+      getHistory(){
+        getHistoryUrl({camera_index_code:this.caseData.code,begin_time:'',end_time:''}).then(res=>{
+
+        });
       },
       close(){},
       initVideo() {
@@ -119,22 +140,22 @@
         };
       },
 
-      // 播放回调
-      onPlayerPlay(player) {
-        // this.globalSetting = true
-        console.log("player play!", player);
-        // document.getElementsByClassName("vjs-control-bar").style.display = "block";
-        // document.getElementsByClassName("vjs-control-bar").style.display = "block";
-      },
+        // 播放回调
+        onPlayerPlay(player) {
+          // this.globalSetting = true
+          console.log("player play!", player);
+          // document.getElementsByClassName("vjs-control-bar").style.display = "block";
+          // document.getElementsByClassName("vjs-control-bar").style.display = "block";
+        },
 
-      // 暂停回调
-      onPlayerPause(player) {
-        // this.globalSetting.controls = false;
-        // console.log("player pause!", player);
-        // var video = document.getElementById("video");
-        // video.controls=false;
-        // document.getElementsByClassName("vjs-control-bar").style.display = "none";
-      },
+        // 暂停回调
+        onPlayerPause(player) {
+          // this.globalSetting.controls = false;
+          // console.log("player pause!", player);
+          // var video = document.getElementById("video");
+          // video.controls=false;
+          // document.getElementsByClassName("vjs-control-bar").style.display = "none";
+        },
     }
   }
 </script>

@@ -105,14 +105,14 @@
     </div>
 
     <repeatView :showDialog.sync="showViewDialog" :repeatData="repeatData"></repeatView>
-    <!--<videoView :showDialog.sync="showVideoDialog" :videoData="videoData"></videoView>-->
-    <div v-show="showVideoDialog" class="dashboard-video-player-box">
-      <div id="dashboardVideoPlayer" class="dashboard-video-player">
-        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
-        <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
-        <!--</video>-->
-      </div>
-    </div>
+    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
+<!--    <div v-show="showVideoDialog" class="dashboard-video-player-box">-->
+<!--      <div id="dashboardVideoPlayer" class="dashboard-video-player">-->
+<!--        &lt;!&ndash;<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">&ndash;&gt;-->
+<!--        &lt;!&ndash;<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">&ndash;&gt;-->
+<!--        &lt;!&ndash;</video>&ndash;&gt;-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -124,7 +124,7 @@
   import SingleImage from "@/components/Upload/SingleImage.vue";
   import {userDetail} from "@/api/user"; // waves directive
   import repeatView from './repeatView'
-  import videoView from './videotView'
+  import videoView from './../../../testing/monitor/components/videoView'
   import point01 from "@/assets/image/point01.png";
   import point02 from "@/assets/image/point02.png";
   import point03 from "@/assets/image/point03.png";
@@ -384,11 +384,17 @@
       },
       clickVideo(){
         // this.showVideoDialog = true
-        this.getData();
+        // this.getData();
         // this.getHistory();
         this.showVideoDialog = true
+        this.videoData={
+          source:this.formData.org_name,
+          code:this.formData.index_code,
+          address:this.formData.name,
+          video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
+        }
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
-        this.playVideo();
+        // this.playVideo();
       },
 
       getData(){

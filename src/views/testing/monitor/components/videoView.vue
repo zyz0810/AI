@@ -9,43 +9,39 @@
     class="dialogContainer"
     @open="open"
   >
-<!--    <p>设备来源：{{caseData.source}} <span class="m_r30">位置信息：{{caseData.address}}</span></p>-->
+    <!--    <p>设备来源：{{caseData.source}} <span class="m_r30">位置信息：{{caseData.address}}</span></p>-->
     <div class="video_cont">
-<!--      <video :src="caseData.video"></video>-->
-<!--      <video-->
-<!--        src="rtsp://10.32.54.38:554/openUrl/ePBOw6I"-->
-<!--        :controls="videoOptions.controls"-->
-<!--        class="video-js vjs-big-play-centered vjs-fluid"-->
-<!--        webkit-playsinline="true"-->
-<!--        playsinline="true"-->
-<!--        x-webkit-airplay="allow"-->
-<!--        x5-playsinline-->
-<!--        style="width: 100%;"-->
-<!--        @play="onPlayerPlay"-->
-<!--        @pause="onPlayerPause"-->
-<!--        @seeking="seeking"-->
-<!--        autoplay="autoplay"-->
-<!--        ref="video">-->
-<!--      </video>-->
-      <video-player ref="playerObj"></video-player>
-      <a @click="playVideo">播放视频</a>
+      <!--      <video :src="caseData.video"></video>-->
+      <video
+        :src="caseData.video"
+        :controls="videoOptions.controls"
+        class="video-js vjs-big-play-centered"
+        webkit-playsinline="true"
+        playsinline="true"
+        x-webkit-airplay="allow"
+        x5-playsinline
+        style="width: 100%;"
+        @play="onPlayerPlay"
+        @pause="onPlayerPause"
+        @seeking="seeking"
+        autoplay="autoplay"
+        ref="video">
+      </video>
     </div>
   </myDialog>
 </template>
 
 <script>
-  import {getNowurl,getHistoryUrl} from '@/api/monitor'
+  import {paraValueList,paraValueSave,paraValueUpdate,paraValueDelete} from '@/api/parameter'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
-  import VideoPlayer from './video'
   export default {
     name: 'parameterView',
     directives: { waves },
     components: {
       draggable,
-      Pagination,
-      VideoPlayer
+      Pagination
     },
     props: {
       showDialog: {
@@ -57,7 +53,6 @@
         required: true,
         type: Object,
         default: {
-          code:'',
           source: "",
           address: "",
           video: ""
@@ -97,24 +92,9 @@
     },
 
     methods: {
-      playVideo() {
-      //   this.$refs['playerObj'].videoSrc = 'rtsp://10.32.54.38:554/openUrl/ePBOw6I'
-      //   this.$refs['playerObj'].playerOptions.sources[0].src = 'rtsp://10.32.54.38:554/openUrl/ePBOw6I'
-      },
       open(){
-        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address;
-        this.getData();
-        this.getHistory();
-      },
-      getData(){
-        getNowurl({camera_index_code:this.caseData.code,protocol:'hls'}).then(res=>{
-
-        });
-      },
-      getHistory(){
-        getHistoryUrl({camera_index_code:this.caseData.code,begin_time:'',end_time:''}).then(res=>{
-
-        });
+        console.log(this.caseData)
+        this.textMap = '设备来源：'+this.caseData.source+' 位置信息：'+this.caseData.address
       },
       close(){},
       initVideo() {
@@ -140,22 +120,22 @@
         };
       },
 
-        // 播放回调
-        onPlayerPlay(player) {
-          // this.globalSetting = true
-          console.log("player play!", player);
-          // document.getElementsByClassName("vjs-control-bar").style.display = "block";
-          // document.getElementsByClassName("vjs-control-bar").style.display = "block";
-        },
+      // 播放回调
+      onPlayerPlay(player) {
+        // this.globalSetting = true
+        console.log("player play!", player);
+        // document.getElementsByClassName("vjs-control-bar").style.display = "block";
+        // document.getElementsByClassName("vjs-control-bar").style.display = "block";
+      },
 
-        // 暂停回调
-        onPlayerPause(player) {
-          // this.globalSetting.controls = false;
-          // console.log("player pause!", player);
-          // var video = document.getElementById("video");
-          // video.controls=false;
-          // document.getElementsByClassName("vjs-control-bar").style.display = "none";
-        },
+      // 暂停回调
+      onPlayerPause(player) {
+        // this.globalSetting.controls = false;
+        // console.log("player pause!", player);
+        // var video = document.getElementById("video");
+        // video.controls=false;
+        // document.getElementsByClassName("vjs-control-bar").style.display = "none";
+      },
     }
   }
 </script>
@@ -163,5 +143,8 @@
   .video_cont{
     width: 100%;
     height: 560px;
+    video{
+      height: 100%;
+    }
   }
 </style>
