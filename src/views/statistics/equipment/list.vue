@@ -17,12 +17,12 @@
       <el-table v-loading="listLoading" :data="list" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
-        <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="community_id_name"></el-table-column>
-        <el-table-column label="所在位置" align="center" prop="address"></el-table-column>
+        <el-table-column label="设备名称" align="center" prop="name"></el-table-column>
+        <el-table-column label="巡查来源" align="center" prop="community_name"></el-table-column>
+        <el-table-column label="所在位置" align="center" prop="install_place"></el-table-column>
         <el-table-column label="使用状态" align="center" prop="">
           <template slot-scope="scope">
-            <span>{{scope.row.status | filtersStatus}}</span>
+            <span>{{scope.row.point_status | filtersStatus}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" min-width="100">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-  import {collectList, } from '@/api/monitor'
+  import {pointList, } from '@/api/monitor'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -64,6 +64,7 @@
         list: [],
         listLoading: false,
         listQuery: {
+          type:'AI',
           facility_name: '',
           page: 1,
           pageSize: 10
@@ -73,7 +74,8 @@
     },
     filters: {
       filtersStatus: function (value) {
-        let StatusArr = {0: '未审核', 1: '已审核'}
+        // 1启用 2、禁用
+        let StatusArr = {1: '启用', 2: '禁用'}
         return StatusArr[value]
       },
     },
@@ -111,7 +113,7 @@
         this.getList()
       },
       getList() {
-        collectList(this.listQuery).then(res => {
+        pointList(this.listQuery).then(res => {
           this.list = res.data.data
           this.total = res.data.total
         });

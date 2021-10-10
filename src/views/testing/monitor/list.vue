@@ -33,14 +33,14 @@
       </el-tabs>
     </div>
     <caseView :showDialog.sync="showViewDialog" :caseData="caseData"></caseView>
-    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
-<!--    <div v-show="showVideoDialog" class="dashboard-video-player-box">-->
-<!--      <div id="dashboardVideoPlayer" class="dashboard-video-player">-->
-<!--        &lt;!&ndash;<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">&ndash;&gt;-->
-<!--          &lt;!&ndash;<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">&ndash;&gt;-->
-<!--        &lt;!&ndash;</video>&ndash;&gt;-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--<videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>-->
+    <div v-show="showVideoDialog" class="dashboard-video-player-box">
+      <div id="dashboardVideoPlayer" class="dashboard-video-player">
+        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
+          <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
+        <!--</video>-->
+      </div>
+    </div>
 
   </div>
 </template>
@@ -369,21 +369,22 @@
       },
 
       handleCase(txt){
-        this.showViewDialog = true
+        this.showViewDialog = true;
         this.caseData = {id:txt}
       },
       handleVideo(txt){
         // this.getData(txt);
         // this.getHistory(txt);
         this.showVideoDialog = true
-        // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
+        // this.playVideo('rtsp://10.32.54.38:554/openUrl/C8qDr2M');
+        this.playVideo('https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2');
         // this.playVideo();
-        this.videoData={
-          source:txt.org_name,
-          code:txt.index_code,
-          address:txt.name,
-          video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
-        }
+        // this.videoData={
+        //   source:txt.org_name,
+        //   code:txt.index_code,
+        //   address:txt.name,
+        //   video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
+        // }
       },
       handleTab(val){
         this.activeId = val;
@@ -398,7 +399,7 @@
     position: absolute;
     width: 900px;
     height: 600px;
-    background: #fff;
+    background: #000;
     top: 50%;
     left: 50%;
     z-index:999;

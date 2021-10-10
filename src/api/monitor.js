@@ -4,6 +4,7 @@ import Qs from 'qs'
  * pageSize 分页结束位置
  * page  分页起始位置
  * type type===allList 没有分页
+ * 设备检索页面 传 type  ==AI 的类型
  */
 export function pointList(data) {
   return request({
