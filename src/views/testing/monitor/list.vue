@@ -179,7 +179,7 @@
                  font-size: 28px;
               "></i>
               <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
-            <source id="source" src="rtsp://10.7.132.108:65/BSwvVkAUrG6XAMhIEeIMYb66A84s" type="rtsp/flv">
+            <source id="source" src="${this.playVideoUri}" type="rtsp/flv">
 
             </video></div>`
           )
@@ -258,9 +258,10 @@
         // };
 
       },
-      getData(txt){
+      getNow(txt){
         getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
-
+          this.showVideoDialog = true;
+          this.playVideo();
         });
       },
       getHistory(txt){
@@ -373,7 +374,7 @@
         this.caseData = {id:txt}
       },
       handleVideo(txt){
-        // this.getData(txt);
+        // this.getNow(txt);
         // this.getHistory(txt);
         this.showVideoDialog = true
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/C8qDr2M');

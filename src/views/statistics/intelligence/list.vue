@@ -60,7 +60,11 @@
         <el-table-column type="selection" width="80" align="center"></el-table-column>
         <el-table-column label="事件编号" align="center" prop="number_no"></el-table-column>
         <el-table-column label="违规类型" align="center" prop="category_big_name"></el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="community_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.row.depart_id | filtersDepart}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="设备名称" align="center" prop="facility_name"></el-table-column>
         <el-table-column label="报警点位" align="center" prop="address"></el-table-column>
         <el-table-column label="上报时间" align="center" prop="collect_time">
@@ -177,6 +181,10 @@
     filters: {
       filtersStatus: function (value) {
         let StatusArr = {1: '未审核', 2: '已审核'};
+        return StatusArr[value]
+      },
+      filtersDepart: function (value) {
+        let StatusArr = {1: '浦沿中队', 2: '长河中队',3: '西兴中队'};
         return StatusArr[value]
       },
       filtersAudited: function (value) {

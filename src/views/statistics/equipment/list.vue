@@ -18,7 +18,11 @@
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="80" align="center"></el-table-column>
         <el-table-column label="设备名称" align="center" prop="name"></el-table-column>
-        <el-table-column label="巡查来源" align="center" prop="community_name"></el-table-column>
+        <el-table-column label="巡查来源" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.row.depart_id | filtersDepart}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="所在位置" align="center" prop="install_place"></el-table-column>
         <el-table-column label="使用状态" align="center" prop="">
           <template slot-scope="scope">
@@ -76,6 +80,10 @@
       filtersStatus: function (value) {
         // 1启用 2、禁用
         let StatusArr = {1: '启用', 2: '禁用'}
+        return StatusArr[value]
+      },
+      filtersDepart: function (value) {
+        let StatusArr = {1: '浦沿中队', 2: '长河中队',3: '西兴中队'};
         return StatusArr[value]
       },
     },
