@@ -134,7 +134,7 @@ export function getNowurl(data) {
   return request({
     url:'/ai/Hikvision/getNowurl',
     method: 'post',
-    data: Qs.stringify(data)
+    data: data
   })
 }
 /* 获取历史监控数据

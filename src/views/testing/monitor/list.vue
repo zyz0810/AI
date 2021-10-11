@@ -179,16 +179,20 @@
                  font-size: 28px;
               "></i>
               <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
-            <source id="source" src="${this.playVideoUri}" type="rtsp/flv">
-
+            <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
             </video></div>`
           )
         window.setTimeout(() => {
           this.player = videojs('myVideo', {
             muted: true,
             controls: true,
-            preload: 'auto'
+            preload: 'auto',
           })
+
+          console.log('好的熬的')
+          console.log(this.playVideoUri)
+          // <source id="source" src="${this.playVideoUri}" type="video/mp4">
+          // <source id="source" src="${this.playVideoUri}" type="rtsp/flv">
             // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
             // <!--rtsp://10.32.54.38:554/openUrl/ePBOw6I-->
           this.player.play()
@@ -259,14 +263,21 @@
 
       },
       getNow(txt){
-        getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
+        // 33010851001310004486
+        // txt.index_code
+        console.log(txt.index_code)
+        getNowurl({camera_index_code:txt.index_code}).then(res=>{
           this.showVideoDialog = true;
-          this.playVideo();
+          this.playVideo(res.data.data.url);
         });
       },
       getHistory(txt){
-        getHistoryUrl({camera_index_code:txt.index_code,begin_time:'',end_time:''}).then(res=>{
-
+        getHistoryUrl({
+          camera_index_code:txt.index_code,
+          start_time:this.$moment(txt.collect_time).format('YYYY-MM-DD HH:mm:ss'),
+          end_time:this.$moment(txt.finished_time).format('YYYY-MM-DD HH:mm:ss')}).then(res=>{
+          this.showVideoDialog = true;
+          this.playVideo(res.data.data.url);
         });
       },
       getPoint(){
@@ -328,13 +339,13 @@
                 '<div class="point_info">' +
                 '<p class="clr_white bg_blue">' + txt.create_time + '</p>' +
                 '<div class="flex baseColor">'+
-                '<div class="flex-item" onClick="handleVideo('+aa+')"><i class="el-icon-video-camera-solid f20"></i>实时视频</div>' +
-                '<div class="flex-item" onClick="handleVideo('+aa+')"><i class="el-icon-video-camera f20"></i>历史视频</div>' +
+                '<div class="flex-item" onClick="handleVideo(1,' + aa + ')"><i class="el-icon-video-camera-solid f20"></i>实时视频</div>' +
+                '<div class="flex-item" onClick="handleVideo(2,'+aa+')"><i class="el-icon-video-camera f20"></i>历史视频</div>' +
                 '</div>' +
                 '<p class="f12 time">监控名称：' + txt.name + '</p>' +
-                '<p class="f12 time">所属区域：' + txt.org_name + '</p>' +
-                '<p class="f12 time">来源区域：' + txt.create_time + '</p>' +
-                '<p class="f12 time">所在地址：' + txt.create_time + '</p>' +
+                '<p class="f12 time">所属区域：' + txt.depart_name + '</p>' +
+                '<p class="f12 time">来源区域：' + txt.community_name + '</p>' +
+                '<p class="f12 time">所在地址：' + txt.install_place + '</p>' +
                 '<p class="f12 time text-right baseColor" onClick="handleCase('+txt.id+')">事件列表</p>' +
                 '</div>';
               infoWin1.setContent(sContent);
@@ -373,12 +384,17 @@
         this.showViewDialog = true;
         this.caseData = {id:txt}
       },
-      handleVideo(txt){
-        // this.getNow(txt);
+      handleVideo(type,txt){
+        if(type == 1){
+          this.getNow(txt);
+        }else if(type == 2){
+          this.getHistory(txt);
+        }
+
         // this.getHistory(txt);
-        this.showVideoDialog = true
+        // this.showVideoDialog = true
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/C8qDr2M');
-        this.playVideo('https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2');
+        // this.playVideo('https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2');
         // this.playVideo();
         // this.videoData={
         //   source:txt.org_name,

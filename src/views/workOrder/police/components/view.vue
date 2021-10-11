@@ -4,7 +4,7 @@
     <div class="warning_tab f16 bold">
       <span :class="['inlineBlock', tabIndex == 0?'active clr_white':'']" @click="tabIndex = 0">现场图片</span>
       <span :class="['inlineBlock', tabIndex == 1?'active clr_white':'']" @click="tabIndex = 1">视频回放</span>
-      <span :class="['inlineBlock', tabIndex == 2?'active clr_white':'']" @click="clickVideo">查看监控</span>
+      <span :class="['inlineBlock', tabIndex == 2?'active clr_white':'']" @click="clickVideo(1)">查看监控</span>
     </div>
     <div class="cont">
       <div class="mt_20">
@@ -29,7 +29,17 @@
             <!--</div>-->
           <!--</li>-->
         <!--</ul>-->
-        <div v-show="tabIndex == 1" style="height: 20vh;">暂无视频</div>
+        <div v-show="tabIndex == 1" style="height: 20vh;">
+          <ul class="img_list flex video_list" v-if="historyVideo != ''">
+            <li @click="clickVideo(2)">
+              <div class="img_list_top clr_white">
+                <img class="img_list_img" src="./../../../../assets/image/player_bg.png">
+                <img class="start_video" src="./../../../../assets/image/player_icon.png">
+              </div>
+            </li>
+          </ul>
+         <span v-else>暂无视频</span>
+        </div>
       </div>
      <div class="flex">
        <div style="width: 70%;">
@@ -66,7 +76,7 @@
 <!--               <el-input v-model.trim="temp.product" placeholder="请输入报警点位" autocomplete="off" suffix-icon="el-icon-search" clearable/>-->
              </el-form-item>
              <el-form-item label="中队：">
-               {{formData.depart_name}}
+               {{formData.depart_id | filtersDepart}}
                <!--<el-select v-model="temp.city_id" placeholder="选择中队" :disabled="true">-->
                  <!--<el-option v-for="option in cityList" :label="option.province+option.city+option.area" :value="option.id" :key="option.id"></el-option>-->
                <!--</el-select>-->
@@ -105,14 +115,14 @@
     </div>
 
     <repeatView :showDialog.sync="showViewDialog" :repeatData="repeatData"></repeatView>
-    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>
-<!--    <div v-show="showVideoDialog" class="dashboard-video-player-box">-->
-<!--      <div id="dashboardVideoPlayer" class="dashboard-video-player">-->
-<!--        &lt;!&ndash;<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">&ndash;&gt;-->
-<!--        &lt;!&ndash;<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">&ndash;&gt;-->
-<!--        &lt;!&ndash;</video>&ndash;&gt;-->
-<!--      </div>-->
-<!--    </div>-->
+<!--    <videoView :showDialog.sync="showVideoDialog" :caseData="videoData"></videoView>-->
+    <div v-show="showVideoDialog" class="dashboard-video-player-box">
+      <div id="dashboardVideoPlayer" class="dashboard-video-player">
+        <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
+        <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
+        <!--</video>-->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -159,61 +169,25 @@
         centerLongitude:'120.21194',//中心经度
         showVideoDialog:false,
         showViewDialog:false,
-        videoList: [{
-          num:'AJ5551521133222',
-          image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-          type:1,
-          time:'2021-8-9 23:22:01',
-          address:'文一路300号',
-          source:1,
-          name:'ST123456',
-          status:1
-        }],
-        imgList: [{
-        num:'AJ5551521133222',
-        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-        type:1,
-        time:'2021-8-9 23:22:01',
-        address:'文一路300号',
-        source:1,
-        name:'ST123456',
-        status:1
-      },{
-        num:'AJ3542221133222',
-        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-        type:0,
-        time:'2021-6-12 13:22:01',
-        address:'文一路356号',
-        source:0,
-        name:'ST1234312',
-        status:0
-      },{
-        num:'AJ3542221133222',
-        image:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic18.nipic.com%2F20111226%2F6647776_214907087000_2.jpg',
-        type:2,
-        time:'2021-6-12 13:22:01',
-        address:'文一路356号',
-        source:0,
-        name:'ST1234312',
-        status:0
-      },],
+        historyVideo:'',
         formData:{
           // category_big_name、collect_time、community_id_name、address
           category_big_name:'',
           collect_time:'',
+          finished_time:'',
           community_id_name:'',
           address:'',
           latitude:'',
           longitude:'',
           facility_name:'',
           status:'',
-          depart_name:'',
+          depart_id:'',
           index_code:'',
           // install_place:'',
           // pic_url:'',
           images:'',
           list:[],
-          pic_url:''
+          pic_url:'',
         },
         tabIndex:0,
         paraLoading:false,
@@ -229,12 +203,6 @@
         },
         rules: {
           category_big: [{ required: true, message: '请选择类别', trigger: 'change' }],
-          // version: [{ required: true, message: '请输入设备型号', trigger: 'change' }],
-          // facility_no: [{ required: true, message: '请输入设备编号', trigger: 'change' }],
-          // imei: [{ required: true, message: '请输入设备IMEI', trigger: 'change' }],
-          // start_time: [{ required: true, message: '请选择安装日期', trigger: 'change' }],
-          // images: [{ required: true, message: '请上传安装照片', trigger: 'change' }],
-          // product: [{ required: true, message: '请输入生产地', trigger: 'change' }],
         },
         categoryList:[],
         playVideoUri:'',
@@ -243,8 +211,8 @@
     },
 
     filters: {
-      filtersType: function (value) {
-        let StatusArr = {0: '店外经营', 1: '违规撑伞', 2: '流动摊点', 3: '沿街晾晒'}
+      filtersDepart: function (value) {
+        let StatusArr = {1: '浦沿中队', 2: '长河中队',3: '西兴中队'};
         return StatusArr[value]
       },
     },
@@ -259,7 +227,7 @@
       // this.$once('hook:beforeDestroy', () => {
       //   this.player.dispose();
       // })
-      this.initPlayer()
+      this.initPlayer();
     },
     methods: {
       handleVideoClose() {
@@ -289,7 +257,6 @@
           this.playVideoUri = ''
         }
       },
-
       playVideo(uri) {
         this.playVideoUri = uri;
         // this.dialogVisible = true
@@ -306,8 +273,7 @@
                  font-size: 28px;
               "></i>
               <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
-            <source id="source" src="rtsp://10.7.132.108:65/BSwvVkAUrG6XAMhIEeIMYb66A84s" type="rtsp/flv">
-
+                <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
             </video></div>`
         )
         window.setTimeout(() => {
@@ -319,13 +285,7 @@
           // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
           // <!--rtsp://10.32.54.38:554/openUrl/ePBOw6I-->
           this.player.play()
-          console.log('获取视频')
-          console.log(this.player)
-
         }, 1000)
-
-
-
 
         /* this.player.src({
           src: this.videos[0].url,
@@ -349,10 +309,10 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,index_code,facility_name, pic_url,collect_time,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, pic_url,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           console.log(categoryArr);
-          this.formData = { id,category_big_name,status,index_code,facility_name, depart_name,pic_url,collect_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
         });
@@ -367,7 +327,6 @@
 
         });
       },
-      getNext(){},
       onLoad() {
         let T = window.T
         this.map = new T.Map('mapDiv')
@@ -382,29 +341,40 @@
         let marker =  new T.Marker(point);
         this.map.addOverLay(marker);
       },
-      clickVideo(){
+      clickVideo(type){
+        if(type == 1){
+          this.getNow();
+        }else if(type == 2){
+          this.showVideoDialog = true
+          this.playVideo(this.historyVideo);
+        }
         // this.showVideoDialog = true
         // this.getData();
         // this.getHistory();
-        this.showVideoDialog = true
-        this.videoData={
-          source:this.formData.org_name,
-          code:this.formData.index_code,
-          address:this.formData.name,
-          video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
-        }
+        // this.showVideoDialog = true
+        // this.videoData={
+        //   source:this.formData.org_name,
+        //   code:this.formData.index_code,
+        //   address:this.formData.name,
+        //   video:'https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4?v_from_s=hkapp-haokan-tucheng&auth_key=1631080314-0-0-bafac110cf549f9655d005c67eb8dbe4&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000186_2'
+        // }
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/ePBOw6I');
         // this.playVideo();
       },
 
-      getData(){
-        getNowurl({camera_index_code:this.formData.index_code,protocol:'hls'}).then(res=>{
-
+      getNow(){
+        getNowurl({camera_index_code:this.formData.index_code}).then(res=>{
+          this.showVideoDialog = true;
+          this.playVideo(res.data.data.url);
         });
       },
       getHistory(){
-        getHistoryUrl({camera_index_code:this.formData.index_code,begin_time:'',end_time:''}).then(res=>{
-
+        console.log(this.formData)
+        getHistoryUrl({
+          camera_index_code:this.formData.index_code,
+          start_time:this.$moment(this.formData.collect_time).format('YYYY-MM-DD HH:mm:ss'),
+          end_time:this.$moment(this.formData.finished_time).format('YYYY-MM-DD HH:mm:ss'),}).then(res=>{
+          this.historyVideo = res.data.data.url;
         });
       },
 
@@ -421,12 +391,12 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
-          const { id,category_big_name,status,index_code,facility_name, collect_time,pic_url,depart_name,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,pic_url,depart_id,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
-          this.formData = { id,category_big_name,status,index_code,facility_name, depart_name,pic_url,collect_time,community_id_name,address, latitude,longitude,images,list,};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
-          // this.getHistory();
+          this.getHistory();
         });
       },
 
@@ -480,6 +450,14 @@
   }
 </script>
 <style lang="scss" scoped>
+  .start_video{
+    position: absolute;
+    left: 135px;
+    top: 50px;
+    z-index: 99;
+    width: 71px;
+    height: 71px;
+  }
   .dashboard-video-player {
     position: absolute;
     width: 900px;
