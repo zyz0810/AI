@@ -115,6 +115,7 @@ export default {
     onEditorFocus(editor) {},
     // 富文本编辑器 内容改变事件
     onEditorChange(editor) {
+      console.log('改变')
       this.$emit(
         "update:isChange",
         !Object.is(this.initialValue, this.currentContent)
@@ -178,6 +179,10 @@ export default {
 }
 
 .quill /deep/ .ql-container {
-  height: 300px;
+  height: 500px;
+}
+/deep/.ql-snow .ql-editor img{
+  width: auto !important;
+  display: block;
 }
 </style>
