@@ -18,137 +18,78 @@
         <span class="f16">来源事件统计</span>
       </div>
     </div>
+    <div class="mt_20 mb_20">
+      <el-form :inline="true" :model="listQuery" class="search_form">
+        <el-form-item label="时间选择：">
+          <el-date-picker
+            v-model="dateTime"
+            clearable
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves type="primary" icon="el-icon-search" @click="getList">搜索</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
     <div v-show="activeIndex == 0">
-      <div class="mt_20 mb_20">
-        <el-form :inline="true" :model="listQuery" class="search_form">
-          <el-form-item label="时间选择：" prop="name">
-            <el-date-picker
-              v-model="temp.name"
-              clearable
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleCreate">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
         </div>
-        <el-table v-loading="listLoading" :data="list" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
-                  element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table v-loading="listLoading" :data="listData.point" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
+                  element-loading-text="拼命加载中" fit ref="tableList">
           <el-table-column label="智能设备" align="center" prop="name"></el-table-column>
-          <el-table-column label="事件数" align="center" prop="num"></el-table-column>
+          <el-table-column label="事件数" align="center" prop="count"></el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getList" class="text-right"/>
       </div>
     </div>
     <div v-show="activeIndex == 1">
-      <div class="mt_20 mb_20">
-        <el-form :inline="true" :model="listQuery" class="search_form">
-          <el-form-item label="时间选择：" prop="name">
-            <el-date-picker
-              v-model="temp.name"
-              clearable
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleCreate">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
         </div>
-        <el-table v-loading="listLoading" :data="list" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
-                  element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table v-loading="listLoading" :data="listData.category" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
+                  element-loading-text="拼命加载中" fit ref="tableList">
           <el-table-column label="类型名称" align="center" prop="name"></el-table-column>
-          <el-table-column label="事件数" align="center" prop="num"></el-table-column>
+          <el-table-column label="事件数" align="center" prop="count"></el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getList" class="text-right"/>
       </div>
     </div>
     <div v-show="activeIndex == 2">
-      <div class="mt_20 mb_20">
-        <el-form :inline="true" :model="listQuery" class="search_form">
-          <el-form-item label="时间选择：" prop="name">
-            <el-date-picker
-              v-model="temp.name"
-              clearable
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleCreate">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
         </div>
-        <el-table v-loading="listLoading" :data="list" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
-                  element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table v-loading="listLoading" :data="listData.audited" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
+                  element-loading-text="拼命加载中" fit ref="tableList">
           <el-table-column label="类型名称" align="center" prop="name"></el-table-column>
-          <el-table-column label="事件数" align="center" prop="num"></el-table-column>
+          <el-table-column label="事件数" align="center" prop="count"></el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getList" class="text-right"/>
       </div>
     </div>
     <div v-show="activeIndex == 3">
-      <div class="mt_20 mb_20">
-        <el-form :inline="true" :model="listQuery" class="search_form">
-          <el-form-item label="时间选择：" prop="name">
-            <el-date-picker
-              v-model="temp.name"
-              clearable
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleCreate">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
         </div>
-        <el-table v-loading="listLoading" :data="list" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
-                  element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table v-loading="listLoading" :data="listData.source" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
+                  element-loading-text="拼命加载中" fit ref="tableList">
           <el-table-column label="类型名称" align="center" prop="name"></el-table-column>
-          <el-table-column label="事件数" align="center" prop="num"></el-table-column>
+          <el-table-column label="事件数" align="center" prop="count"></el-table-column>
         </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getList" class="text-right"/>
       </div>
     </div>
-    <paraView :showDialog.sync="showViewDialog" :paraData="paraData" @insertProduct="getList"></paraView>
-
   </div>
 </template>
 
 <script>
-  import {paraList, paraSave, paraUpdate, paraDelete} from '@/api/parameter'
+  import {earlyWarning} from '@/api/statistics'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -165,65 +106,15 @@
     data() {
       return {
         activeIndex:0,
-        showViewDialog:false,
-        paraData:{},
-        paraLoading:false,
-        operationOption: [{
-          id: 0,
-          name: '下拉框'
-        }, {
-          id: 1,
-          name: '复选框'
-        }, {
-          id: 2,
-          name: '输入框'
-        }],
-        updateBtn: true,
-        enableBtn: true,
-        disableBtn: true,
         total: 0,
-        parameterValueList: [{name: ''}],
-        list: [{
-          name:'列表1',
-          address:'杭州市',
-          time:1298963414,
-          num:1,
-          status:1
-        },{
-          name:'列表2',
-          address:'杭州市',
-          time:1298963414,
-          num:1,
-          status:1
-        }],
+        list: [],
         listLoading: false,
         listQuery: {
-          name: '',
-          status: undefined,
-          page: 1,
-          limit: 10
+          start_time: '',
+          end_time: '',
         },
-        updateId: undefined,
-        dialogFormVisible: false,
-        temp: {
-          // id: undefined,
-          status: 1,
-          name: '',
-          orders: '',
-          isRequired: 0,
-          operatingMode: 0,
-          parameterValueList: [],
-        },
-        textMap: {
-          update: '编辑参数信息',
-          create: '新增参数信息',
-          view:'查看'
-        },
-        dialogStatus: '',
-        rules: {
-          name: [{required: true, message: '请输入名称', trigger: 'change'}],
-        },
-        tableHeight:'100'
+        tableHeight:'100',
+        listData:{},
       }
     },
     filters: {
@@ -240,6 +131,19 @@
       ...mapState({
         roles: state => state.user.roles,
       }),
+      dateTime: {
+        get() {
+          if (this.listQuery.start_time && this.listQuery.end_time) {
+            return [this.listQuery.start_time, this.listQuery.end_time];
+          } else {
+            return [];
+          }
+        },
+        set(v) {
+          this.listQuery.start_time = v[0];
+          this.listQuery.end_time = v[1];
+        },
+      },
     },
     mounted() {
       this.$nextTick(function() {
@@ -261,20 +165,16 @@
           }
         };
       });
-      // this.getList();
+      this.getList();
     },
     methods: {
+      handleExport(){},
       handleClick(val){
         this.activeIndex = val;
       },
-      handleFilter() {
-        this.listQuery.page = 1;
-        this.getList()
-      },
       getList() {
-        paraList(this.listQuery).then(res => {
-          this.list = res.data.data
-          this.total = res.data.count
+        earlyWarning(this.listQuery).then(res => {
+          this.listData = res.data
         });
       },
 
@@ -287,29 +187,7 @@
         }
         this.getList();
       },
-      clickRow(row){
-        this.$refs.tableList.toggleRowSelection(row)
-      },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.rowInfo = val;
-        if (val.length == 1) {
-          this.updateBtn = false
-          this.deleteBtn = false
-          if(val[0].status == 0){
-            this.enableBtn = false
-            this.disableBtn = true
-          }else{
-            this.enableBtn = true
-            this.disableBtn = false
-          }
-        } else {
-          this.updateBtn = true
-          this.deleteBtn = true
-          this.enableBtn = true
-          this.disableBtn = true
-        }
-      },
+
 
     }
   }
