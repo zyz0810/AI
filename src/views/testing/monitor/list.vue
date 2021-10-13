@@ -266,6 +266,9 @@
         // 33010851001310004486
         // txt.index_code
         console.log(txt.index_code)
+
+        // this.showVideoDialog = true;
+        // this.playVideo('rtsp://10.32.54.38:554/openUrl/vWRmU48');
         getNowurl({camera_index_code:txt.index_code}).then(res=>{
           this.showVideoDialog = true;
           this.playVideo(res.data.data.url);

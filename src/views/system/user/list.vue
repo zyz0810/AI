@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <div id="reportChart1" class="report-chart none" style="width: 500px;height: 300px;display: none;"/>
-    <div id="reportChart2" class="report-chart none" style="width: 500px;height: 300px;display: none;"/>
-    <div class="flex flex-vertical" style="width: 50%;position:fixed;z-index:-1;" ref="imageWrapper">
+    <div id="reportChart1" class="report-chart none" style="width: 800px;height: 300px;display: none;"/>
+    <div id="reportChart2" class="report-chart none" style="width: 800px;height: 300px;display: none;"/>
+    <div class="flex flex-vertical" style="width: 800px;position:fixed;z-index:-1;" ref="imageWrapper">
       <div id="reportChart3" class="report-chart none" style="width: 500px;height: 300px;"></div>
-      <div class="f18 text-right" style="width: 50%">
+      <div class="f18 text-right">
         <p><span class="f30 clr_blue bold mr_10">{{totalData.count}}</span>识别总数</p>
         <p><span class="f30 baseColor bold mr_10">{{totalData.isAudited}}</span>审核通过</p>
         <p><span class="f30 baseColor bold mr_10">{{totalData.isNotAudited}}</span>审核不通过</p>
@@ -27,6 +27,7 @@
             clearable
             type="daterange"
             range-separator="至"
+            value-format="yyyy-MM-dd"
             start-placeholder="开始日期"
             end-placeholder="结束日期">
           </el-date-picker>
@@ -51,7 +52,7 @@
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
   import quillEditor from "@/components/quillEditor/quillEditor";
-  import {analysisData, earlyWarning} from "@/api/statistics";
+  import {analysisData, earlyWarning,runData} from "@/api/statistics";
   import chartOptions from './../../../utils/echartImg'
   import echarts from 'echarts'
   export default {
@@ -73,8 +74,8 @@
         listQuery: {
           name: '城市管理智能运行分析报告',
           dimension:1,
-          start_time: '',
-          end_time: ''
+          start_time: this.$moment().format('YYYY-MM-DD'),
+          end_time: this.$moment().format('YYYY-MM-DD')
         },
         tableHeight:'100',
         totalData:{},
@@ -129,7 +130,7 @@
       handleExport(){
         if (this.editor) {
           // eslint-disable-next-line
-          $('.ql-editor').wordExport(this.$moment().format('YYYYMMDDHHmmss'))
+          $('.ql-editor').wordExport(this.listQuery.name + '-' + this.$moment().format('YYYYMMDDHHmmss'))
         }
       },
       // getReport(){
@@ -138,7 +139,7 @@
       // },
       getReport() {
         this.editor = false;
-        analysisData().then(res => {
+        runData({start_time:this.listQuery.start_time,end_time:this.listQuery.end_time,}).then(res => {
           this.totalData = res.data.total;
           let categoryList = res.data.category.map(item=>{
             return item.x_name;
@@ -155,7 +156,7 @@
             animation: false,
             grid: {
               left: '20',
-              right: '10',
+              right: '80',
               bottom: '30',
               containLabel: true
             },
@@ -208,7 +209,19 @@
               smooth:false,
               data: trend_y,
               type: 'line',
-              color:'rgba(236,109,57,1)'
+              color:'rgba(236,109,57,1)',
+              // itemStyle: {
+              //   normal: {
+              //     label: {
+              //       show: true,  //开启显示
+              //       position: 'top',  //在上方显示
+              //       textStyle: {  //数值样式
+              //         color: 'black',
+              //         fontSize: 12
+              //       }
+              //     }
+              //   }
+              // },
             }]
           };
           if (!this.chart1) {
@@ -227,8 +240,8 @@
           res.data.category.map((item,index)=>{
             if(index<10){
               category_x.push(item.x_name);
-              // category_y.push(item.y_count);
-              category_y.push(6);
+              category_y.push(item.y_count);
+              // category_y.push(6);
             }
           })
           const option2 = {
@@ -299,6 +312,14 @@
                 // barGap: 0,
                 itemStyle: {
                   normal:{
+                    label: {
+                      show: true,  //开启显示
+                      position: 'top',  //在上方显示
+                      textStyle: {  //数值样式
+                        color: '#666',
+                        fontSize: 12
+                      }
+                    },
                     // color: function(params){
                     //   const barColors= ['rgba(230,108,59,1)',"rgba(0,160,234,1)"];
                     //   return barColors[params.dataIndex];
@@ -396,14 +417,14 @@
                   }
                 },
                 data: [{
-                  // name:'审核通过',value:res.data.isAudited
-                  name:'审核通过',value:28
+                  name:'审核通过',value:res.data.isAudited
+                  // name:'审核通过',value:28
                 },{
-                  // name:'未审核',value:res.data.audited
-                  name:'未审核',value:44
+                  name:'未审核',value:res.data.audited
+                  // name:'未审核',value:44
                 },{
-                  // name:'审核不通过',value:res.data.isNotAudited
-                  name:'审核不通过',value:68
+                  name:'审核不通过',value:res.data.isNotAudited
+                  // name:'审核不通过',value:68
                 }]
               }
             ]
@@ -423,33 +444,89 @@
           const chart1Img = this.chart1.getDataURL()
           const chart2Img = this.chart2.getDataURL(opts)
           let chart3Img;
-      setTimeout(()=>{
-        html2canvas(this.$refs.imageWrapper).then(canvas => {
-          let dataURL = canvas.toDataURL("image/png");
-          chart3Img = dataURL;
-          this.escriptionBefore ='<h1 style="text-align:center;">城市管理智能运行分析报告</h1>' +
-            '<h2>一、运行概述</h2>' +
-            '<p>运行周期：'+ this.listQuery.start_time + '至' + this.listQuery.end_time +'</p>' +
-            '<p>AI视频智能分析系统在本周期范围内，实现'+  res.data.category.length +'类类别问题的上报， 包括：' + categoryList.join("、") +'</p>' +
-            '<p>上报问题：'+ res.data.total.count +'起</p>' +
-            '<p>审核事件：'+ Number(res.data.total.isAudited) + Number(res.data.total.isNotAudited) +'件</p>' +
-            '<p>立案案件：'+ res.data.total.isAudited +'件</p>' +
-            '<p>准确率：'+ Number(res.data.total.isAudited)/(Number(res.data.total.isAudited) + Number(res.data.total.isNotAudited)) +'%</p>' +
-            '<h2 style="margin-top: 20px;">二、数据分析</h2>' +
-            '<h3>1、上报问题时间分布</h3>' +
-            '<img src="'+ chart1Img +'" alt/>' +
-            '<h3>2、上报问题类型分布</h3>' +
-            '<img src="'+ chart2Img +'" alt/>' +
-            '<h3>3、事件趋势分析</h3>' +
-            '<img src="'+ chart3Img +'" alt/>' +
-            '<h2 style="margin-top: 20px;">三、小结</h2>' +
-            '<p>1、本统计时段，店外经营、无照经营游商、非机动车乱停放、占道经营、暴露垃圾较为严重，为高发问题；</p>' +
-            '<p>2、在巡查时段中，14:00~16:00为问题高发时间段。</p>';
-          this.escription = this.escriptionBefore
-          this.$refs.myQuillEditor.changeContent(this.escription);
-          this.editor = true;
-        });
-      },1000)
+          let shenhe = Number(res.data.total.isAudited) + Number(res.data.total.isNotAudited);
+          let caseRate;
+          if(Number(res.data.total.isAudited) + Number(res.data.total.isNotAudited) != 0){
+            caseRate = ((Number(res.data.total.isAudited)/Number(res.data.total.isAudited) + Number(res.data.total.isNotAudited))*100).toFixed(2)
+          }else{
+            caseRate = 0
+          }
+
+          let newArr = trend_y.reduce((pre,cur)=>{
+            if(!pre.includes(cur)){
+              return pre.concat(cur)
+            }else{
+              return pre
+            }
+          },[])
+          let max = trend_y.reduce(function(a , b,index,array ){
+            // let maxIndex = array.length;
+            // // console.log(array[index])
+            // if( b.y_count > a.y_count){
+            //   if(index == maxIndex){
+            //     return array[index - 1].x_name + '--' + array[index].x_name;
+            //   }else{
+            //     return array[index - 1].x_name + '--' + array[index + 1].x_name;
+            //   }
+            // }else{
+            //   if(index>1){
+            //     return array[index - 2].x_name + '--' + array[index].x_name;
+            //   }else{
+            //     return array[0].x_name + '--' + array[index].x_name;
+            //   }
+            // }
+            return b > a ? b : a;
+          })
+
+          let b=[] ;
+          let xiaojie='';
+          if(newArr.length==1 && newArr[0] != 0){ //全是重复值且不是0
+            xiaojie = '<p>2、在巡查时段中，0:00~23:00为问题高发时间段。</p>'
+          }else if(newArr.length==1&&newArr[0] == 0){//全是重复值且是0
+            xiaojie = '<p></p>'
+          }else if(newArr.length>1){//不全是重复值，
+            if(max > 0){
+              for(let i =0;i<res.data.trend.length;i++){
+                if(res.data.trend[i].y_count == max){
+                  if(i==0){
+                    b.push(res.data.trend[i].x_name+ ' - ' +res.data.trend[i+1].x_name,)
+                  }else if(i == res.data.trend.length-1){
+                    b.push(res.data.trend[i-1].x_name+ ' - ' +res.data.trend[i].x_name,)
+                  }else{
+                    b.push(res.data.trend[i-1].x_name+ ' - ' +res.data.trend[i+1].x_name,)
+                  }
+                }
+              }
+              xiaojie = '<p>2、在巡查时段中，'+ b.join("、") +'为问题高发时间段。</p>'
+            }
+          }
+
+          setTimeout(()=>{
+            html2canvas(this.$refs.imageWrapper).then(canvas => {
+              let dataURL = canvas.toDataURL("image/png");
+              chart3Img = dataURL;
+              this.escriptionBefore ='<h1 style="text-align:center;">城市管理智能运行分析报告</h1>' +
+                '<h2>一、运行概述</h2>' +
+                '<p>运行周期：'+ this.listQuery.start_time + '至' + this.listQuery.end_time +'</p>' +
+                '<p>AI视频智能分析系统在本周期范围内，实现'+  res.data.category.length +'类类别问题的上报， 包括：' + categoryList.join("、") +'</p>' +
+                '<p>上报问题：'+ res.data.total.count +'起</p>' +
+                '<p>审核事件：'+ shenhe +'件</p>' +
+                '<p>立案案件：'+ res.data.total.isAudited +'件</p>' +
+                '<p>准确率：'+ caseRate +'%</p>' +
+                '<h2 style="margin-top: 20px;">二、数据分析</h2>' +
+                '<h3>1、上报问题时间分布</h3>' +
+                '<img src="'+ chart1Img +'" alt/>' +
+                '<h3>2、上报问题类型分布</h3>' +
+                '<img src="'+ chart2Img +'" alt/>' +
+                '<h3>3、识别概况统计</h3>' +
+                '<img src="'+ chart3Img +'" alt/>' +
+                '<h2 style="margin-top: 20px;">三、小结</h2>' +
+                '<p>1、本统计时段，'+ category_x.join("、") +'较为严重，为高发问题；</p>' +xiaojie;
+              this.escription = this.escriptionBefore
+              this.$refs.myQuillEditor.changeContent(this.escription);
+              this.editor = true;
+            });
+          },1000)
 
 
 

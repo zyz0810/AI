@@ -33,3 +33,14 @@ export function patrolCase(data) {
     data: Qs.stringify(data)
   })
 }
+/* 运行报告
+ * start_time 如2020-10-16
+ * end_time 如2020-10-16
+ */
+export function runData(data) {
+  return request({
+    url:'/ai/Analysis/runData',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
