@@ -162,7 +162,6 @@
           this.playVideoUri = ''
         }
       },
-
       playVideo(uri) {
         this.playVideoUri = uri;
         // this.dialogVisible = true
@@ -188,9 +187,6 @@
             controls: true,
             preload: 'auto',
           })
-
-          console.log('好的熬的')
-          console.log(this.playVideoUri)
           // <source id="source" src="${this.playVideoUri}" type="video/mp4">
           // <source id="source" src="${this.playVideoUri}" type="rtsp/flv">
             // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
@@ -269,7 +265,7 @@
 
         // this.showVideoDialog = true;
         // this.playVideo('rtsp://10.32.54.38:554/openUrl/vWRmU48');
-        getNowurl({camera_index_code:txt.index_code}).then(res=>{
+        getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
           this.showVideoDialog = true;
           this.playVideo(res.data.data.url);
         });

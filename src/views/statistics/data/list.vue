@@ -25,6 +25,7 @@
             v-model="dateTime"
             clearable
             type="daterange"
+            value-format="yyyy-MM-dd"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期">

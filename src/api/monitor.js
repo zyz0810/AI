@@ -132,7 +132,7 @@ export function delCollect(data) {
  */
 export function getNowurl(data) {
   return request({
-    url:'/ai/Hikvision/getNowurl',
+    url:'/api/Hikvision/getNowurl',
     method: 'post',
     data: data
   })
