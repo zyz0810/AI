@@ -144,7 +144,7 @@ export function getNowurl(data) {
  */
 export function getHistoryUrl(data) {
   return request({
-    url:'/ai/Hikvision/getHistoryUrl',
+    url:'/api/Hikvision/getHistoryUrl',
     method: 'post',
     data: Qs.stringify(data)
   })

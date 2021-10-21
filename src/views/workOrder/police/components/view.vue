@@ -3,7 +3,7 @@
 
     <div class="warning_tab f16 bold">
       <span :class="['inlineBlock', tabIndex == 0?'active clr_white':'']" @click="tabIndex = 0">现场图片</span>
-      <span :class="['inlineBlock', tabIndex == 1?'active clr_white':'']" @click="tabIndex = 1">视频回放</span>
+<!--      <span :class="['inlineBlock', tabIndex == 1?'active clr_white':'']" @click="tabIndex = 1">视频回放</span>-->
       <span :class="['inlineBlock', tabIndex == 2?'active clr_white':'']" @click="clickVideo(1)">查看监控</span>
     </div>
     <div class="cont">
@@ -363,7 +363,7 @@
       },
 
       getNow(){
-        getNowurl({camera_index_code:this.formData.index_code}).then(res=>{
+        getNowurl({camera_index_code:this.formData.index_code,protocol:'hls'}).then(res=>{
           this.showVideoDialog = true;
           this.playVideo(res.data.data.url);
         });
@@ -396,7 +396,7 @@
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,categoryArr};
           this.mapPoint();
-          this.getHistory();
+          // this.getHistory();
         });
       },
 

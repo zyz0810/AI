@@ -339,7 +339,7 @@
                 '<p class="clr_white bg_blue">' + txt.create_time + '</p>' +
                 '<div class="flex baseColor">'+
                 '<div class="flex-item" onClick="handleVideo(1,' + aa + ')"><i class="el-icon-video-camera-solid f20"></i>实时视频</div>' +
-                '<div class="flex-item" onClick="handleVideo(2,'+aa+')"><i class="el-icon-video-camera f20"></i>历史视频</div>' +
+                // '<div class="flex-item" onClick="handleVideo(2,'+aa+')"><i class="el-icon-video-camera f20"></i>历史视频</div>' +
                 '</div>' +
                 '<p class="f12 time">监控名称：' + txt.name + '</p>' +
                 '<p class="f12 time">所属区域：' + txt.depart_name + '</p>' +
