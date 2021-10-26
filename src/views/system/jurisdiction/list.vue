@@ -6,9 +6,9 @@
           <el-cascader ref="cascaderPublish" clearable v-model="listQuery.category_small" :options="categoryList" @change="changeCategory" :show-all-levels="false" filterable :props="props" placeholder="请选择违规类型"></el-cascader>
 
         </el-form-item>
-        <el-form-item label="时间选择：" prop="end_time">
+        <el-form-item label="时间选择：" prop="day_time">
           <el-date-picker
-            v-model="listQuery.end_time"
+            v-model="listQuery.day_time"
             clearable
             type="date"
             value-format="yyyy-MM-dd"
@@ -73,7 +73,7 @@
         listQuery:{
           category_big:'',
           category_small:'',
-          end_time:''
+          day_time:''
         },
         barData:{
           grid: {

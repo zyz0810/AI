@@ -313,7 +313,7 @@
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           console.log(categoryArr);
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
-          this.temp = {is_audited,remark,is_important,categoryArr};
+          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
         });
         this.$nextTick(function () {
@@ -394,7 +394,7 @@
           const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,pic_url,depart_id,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
-          this.temp = {is_audited,remark,is_important,categoryArr};
+          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
           // this.getHistory();
         });
