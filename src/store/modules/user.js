@@ -76,6 +76,18 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       let role = ['admin'];
+      getInfo().then(res => {
+        if(res.code == 1){
+          commit('SET_NAME', res.data.user_name);
+          setName(res.data.name);
+        }else{
+          commit('SET_NAME', '');
+          removeName();
+        }
+      }).catch(error => {
+        commit('SET_NAME', '');
+        removeName();
+      })
       commit('SET_ROLES', role);
       resolve(role);
       // getInfo().then(response => {

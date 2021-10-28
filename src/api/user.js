@@ -27,12 +27,13 @@ export function logout(data) {
 //     method: 'get'
 //   })
 // }
-// export function getInfo() {
-//   return request({
-//     url:'api-user/users/current',
-//     method: 'get'
-//   })
-// }
+export function getInfo(data) {
+  return request({
+    url: `/admin/user/detail`,
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
 
 /* 忘记密码
  * confirmPassword  确认密码
