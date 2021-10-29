@@ -11,7 +11,7 @@
         <ul class="img_list flex" v-show="tabIndex == 0">
           <li style="width: auto;">
             <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="formData.pic_url" style="width: auto;">
+              <img class="img_list_img" :src="formData.pic_url" style="width: auto; cursor: pointer;" @click="handleImg(formData.pic_url)">
               <span class="block f15 type_tag">{{formData.category_big_name}}</span>
               <p class="f15 time">{{$moment(formData.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
             </div>
@@ -123,6 +123,13 @@
         <!--</video>-->
       </div>
     </div>
+    <my-dialog :visible.sync="dialogVisible"
+               title="查看图片"
+               :append-to-body="true">
+      <img width="100%"
+           :src="dialogImageUrl"
+           alt />
+    </my-dialog>
   </div>
 </template>
 
@@ -206,7 +213,9 @@
         },
         categoryList:[],
         playVideoUri:'',
-        player: null
+        player: null,
+        dialogImageUrl: "",
+        dialogVisible: false,
       }
     },
 
@@ -230,6 +239,10 @@
       this.initPlayer();
     },
     methods: {
+      handleImg(url){
+        this.dialogImageUrl = url;
+        this.dialogVisible = true;
+      },
       handleVideoClose() {
         this.player.dispose()
         $('#myVideo').remove()

@@ -10,9 +10,10 @@
     @open="open"
   >
     <el-form ref="dataForm" :model="formData" label-width="120px">
-      <el-form-item label="设备名称" prop="name">{{formData.facility_name}}</el-form-item>
-      <el-form-item label="巡查来源" prop="name">{{formData.community_id_name}}</el-form-item>
-      <el-form-item label="所在位置" prop="name">{{formData.address}}</el-form-item>
+      <el-form-item label="设备名称" prop="name">{{formData.name}}</el-form-item>
+      <el-form-item label="巡查来源" prop="name">{{formData.depart_id | filtersDepart}}</el-form-item>
+      <el-form-item label="所在位置" prop="name">{{formData.install_place}}</el-form-item>
+      <el-form-item label="视频地址" prop="name">{{formData.videoUrl}}</el-form-item>
       <el-form-item label="用途" prop="name">AI智能采集</el-form-item>
       <el-form-item label="来源" prop="name">公安</el-form-item>
     </el-form>
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-  import {collectDetail} from '@/api/monitor'
+  import {collectDetail, getNowurl} from '@/api/monitor'
   import draggable from 'vuedraggable'
   export default {
     name: 'equipmentView',
@@ -48,9 +49,10 @@
     data() {
       return {
         formData:{
-          facility_name:'',
-          community_id_name:'',
-          address:'',
+          name:'',
+          depart_id:'',
+          install_place:'',
+          videoUrl:''
         },
       }
     },
@@ -64,8 +66,21 @@
         }
       },
     },
+    filters: {
+      filtersStatus: function (value) {
+        // 1启用 2、禁用
+        let StatusArr = {1: '启用', 2: '禁用'}
+        return StatusArr[value]
+      },
+      filtersDepart: function (value) {
+        let StatusArr = {1: '浦沿中队', 2: '长河中队',3: '西兴中队'};
+        return StatusArr[value]
+      },
+    },
     methods: {
       open(){
+        const {name,depart_id,install_place} = this.viewData.option;
+        this.formData = {name,depart_id,install_place,videoUrl:''}
         this.getView();
       },
       close(){
@@ -76,9 +91,10 @@
         };
       },
       getView(){
-        collectDetail({id:this.viewData.id}).then(res=>{
-          const { facility_name, community_id_name,address, } = res.data
-          this.formData = { facility_name, community_id_name,address, }
+        getNowurl({camera_index_code:this.viewData.option.index_code,protocol:'hls'}).then(res=>{
+          // this.showVideoDialog = true;
+          // this.playVideo(res.data.data.url);
+          this.formData.videoUrl = res.data.data.url;
         });
       },
 

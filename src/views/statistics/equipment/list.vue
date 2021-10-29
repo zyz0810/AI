@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form :inline="true" :model="listQuery" class="search_form">
         <el-form-item label="监控点名称：">
-          <el-input v-model.trim="listQuery.facility_name" placeholder="请输入监控点名称" autocomplete="off" clearable/>
+          <el-input v-model.trim="listQuery.name" placeholder="请输入监控点名称" autocomplete="off" clearable/>
         </el-form-item>
         <el-form-item>
           <el-button v-waves type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
@@ -69,7 +69,7 @@
         listLoading: false,
         listQuery: {
           type:'AI',
-          facility_name: '',
+          name: '',
           page: 1,
           pageSize: 10
         },
@@ -153,7 +153,8 @@
       handleView(row){
         this.showViewDialog = true
         this.viewData = {
-          id:row.id
+          id:row.id,
+          option:row
         }
       },
 
