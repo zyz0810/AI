@@ -37,7 +37,7 @@
     <div v-show="showVideoDialog" class="dashboard-video-player-box">
       <div id="dashboardVideoPlayer" class="dashboard-video-player">
         <!--<video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup="{}">-->
-          <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
+        <!--<source id="source" src="rtsp://10.32.54.38:554/openUrl/ePBOw6I" autoplay type="rtsp/flv">-->
         <!--</video>-->
       </div>
     </div>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+  import dragDialog from '@/directive/el-drag-dialog'
   import echarts from 'echarts'
   import {pointList, collectList, getNowurl, getHistoryUrl} from '@/api/monitor'
   import draggable from 'vuedraggable'
@@ -63,7 +64,30 @@
   import map from '@/components/Map/map' // 引入刚才的map.js 注意路径
   export default {
     name: 'parameterList',
-    directives: {waves},
+    directives: {waves,dragDialog,
+      dragDiv: function(el) {
+        let dragBox = el; //获取当前元素
+        // let dragBox = el.querySelector('.my_drag')
+        dragBox.onmousedown = e => {
+          //算出鼠标相对元素的位置
+          let disX = e.clientX - dragBox.offsetLeft;
+          let disY = e.clientY - dragBox.offsetTop;
+          document.onmousemove = e => {
+            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+            let left = e.clientX - disX;
+            let top = e.clientY - disY;
+            //移动当前元素
+            dragBox.style.left = left + "px";
+            dragBox.style.top = top + "px";
+          };
+          document.onmouseup = e => {
+            //鼠标弹起来的时候不再移动
+            document.onmousemove = null;
+            //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
+            document.onmouseup = null;
+          };
+        };
+      }},
     mixins: [map],
     components: {
       draggable,
@@ -74,6 +98,7 @@
     },
     data() {
       return {
+        offectNum:1,
         caseData:{},
         videoData:{},
         pointList:[],
@@ -126,22 +151,61 @@
       this.getNew();
       window.handleCase = this.handleCase;
       window.handleVideo = this.handleVideo;
-      window.closeVideoDialog = () => {
-        this.handleVideoClose()
-      }
+      window.closeVideoDialog = this.handleVideoClose;
+      window.handleDrag = this.handleDrag;
+
       // this.$once('hook:beforeDestroy', () => {
       //   this.player.dispose();
       // })
       this.initPlayer()
     },
     methods: {
-      handleVideoClose() {
-        this.player.dispose()
-        $('#myVideo').remove()
-        $('#dashboardVideoPlayer').html('')
-        this.player = null
-        this.showVideoDialog = false
-        this.playVideoUri = ''
+      handleDrag(el){
+        console.log(el)
+        console.log('拖拽')
+        let dragBox = el; //获取当前元素
+        // let dragBox = el.querySelector('.my_drag')
+        dragBox.onmousedown = e => {
+          console.log(e.clientY)
+          console.log(dragBox.clientY)
+          //算出鼠标相对元素的位置
+          let disX = e.clientX - dragBox.offsetLeft;
+          let disY = e.clientY - dragBox.offsetTop;
+          document.onmousemove = e => {
+            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+            let left = e.clientX - disX;
+            let top = e.clientY - disY;
+            //移动当前元素
+            dragBox.style.left = left + "px";
+            dragBox.style.top = top + "px";
+          };
+          document.onmouseup = e => {
+            //鼠标弹起来的时候不再移动
+            document.onmousemove = null;
+            //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
+            document.onmouseup = null;
+          };
+        };
+      },
+      handleVideoClose(id) {
+        // this.player.dispose()
+        $('#myVideo'+id).remove()
+        $('#myVideoContent'+id).remove()
+        console.log('#myVideo'+id)
+        console.log('#myVideoContent'+id)
+        console.log($('#dashboardVideoPlayer').children().length)
+
+        if($('#dashboardVideoPlayer').children().length < 1){
+          this.player.dispose()
+          $('#dashboardVideoPlayer').html('')
+          this.player = null
+          this.showVideoDialog = false
+          this.playVideoUri = ''
+        }
+        // $('#dashboardVideoPlayer').html('')
+        // this.player = null
+        // this.showVideoDialog = false
+        // this.playVideoUri = ''
       },
       initPlayer() {
         this.$nextTick(() => {
@@ -155,20 +219,41 @@
       handleCloseKeyDown(e) {
         if (this.dialogVisible && e.keyCode === 27) {
           this.player.dispose()
-          $('#myVideo').remove()
-          $('#dashboardVideoPlayer').html('')
-          this.player = null
-          this.showVideoDialog = false
-          this.playVideoUri = ''
+          // $('#myVideo').remove()
+          // $('#dashboardVideoPlayer').html('')
+          $('#myVideo'+id).remove()
+          $('#myVideoContent'+id).remove()
+
+          if($('#dashboardVideoPlayer').children().length < 1){
+            this.player.dispose()
+            $('#dashboardVideoPlayer').html('')
+            this.player = null
+            this.showVideoDialog = false
+            this.playVideoUri = ''
+          }
+          // this.player = null
+          // this.showVideoDialog = false
+          // this.playVideoUri = ''
         }
       },
-      playVideo(uri) {
+
+      playVideo(uri,txt) {
+
+        // let videoPlayer = $("#myVideo").get(0);
+        // if (typeof (videoPlayer) != "undefined") {
+        //   let myPlayer = videojs('myVideo');
+        //   myPlayer.dispose();
+        // }
+
         this.playVideoUri = uri;
         // this.dialogVisible = true
+        let id = "myVideo"+txt.id;
+        let divId = "myVideoContent"+txt.id;
+
         $('#dashboardVideoPlayer').append(
-          `<div style="position: relative;width: 100%;height: 100%;">
+          `<div id="`+ divId +`" style="position: fixed;width: 450px;height: 300px; padding-top: 20px;left:`+ Number(20)*this.offectNum +`px;top:`+ Number(20)*this.offectNum +`px;" class="my_drag">
               <i class="el-icon-error"
-                 onclick="closeVideoDialog()"
+                 onclick="closeVideoDialog(`+ txt.id +`)"
                  style="position: absolute;
                  right: 10px;
                  top: 10px;
@@ -177,19 +262,44 @@
                  cursor: pointer;
                  font-size: 28px;
               "></i>
-              <video id="myVideo" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
-            <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
+              <video id="`+ id +`" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%;" data-setup="{}">
+     <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
             </video></div>`
           )
+        this.offectNum++;
+        $('#'+divId).mousedown(function (e) {
+          console.log(e)
+          console.log('狂口高：'+e.clientY)
+          let dragBox =  $('#'+divId)[0];
+          console.log(' 元素')
+          console.log('元素高：'+dragBox.offsetTop)
+          //算出鼠标相对元素的位置
+          let disX = e.clientX - dragBox.offsetLeft;
+          let disY = e.clientY - dragBox.offsetTop;
+          document.onmousemove = e => {
+            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+            let left = e.clientX - disX;
+            let top = e.clientY - disY;
+            //移动当前元素
+            dragBox.style.left = left + "px";
+            dragBox.style.top = top + "px";
+          };
+          document.onmouseup = e => {
+            //鼠标弹起来的时候不再移动
+            document.onmousemove = null;
+            //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
+            document.onmouseup = null;
+          };
+        })
         window.setTimeout(() => {
-          this.player = videojs('myVideo', {
+          this.player = videojs(id, {
             muted: true,
             controls: true,
             preload: 'auto',
           })
           // <source id="source" src="${this.playVideoUri}" type="video/mp4">
           // <source id="source" src="${this.playVideoUri}" type="rtsp/flv">
-            // <!--<source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">-->
+          //   <source id="source" src="${this.playVideoUri}" type="application/x-mpegURL">
             // <!--rtsp://10.32.54.38:554/openUrl/ePBOw6I-->
           this.player.play()
           console.log('获取视频')
@@ -262,9 +372,8 @@
         // 33010851001310004486
         // txt.index_code
         console.log(txt.index_code)
-
         // this.showVideoDialog = true;
-        // this.playVideo('rtsp://10.32.54.38:554/openUrl/vWRmU48');
+        // this.playVideo('https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4',txt);
         getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
           this.showVideoDialog = true;
           this.playVideo(res.data.data.url);
@@ -300,10 +409,48 @@
         // this.map.setStyle('indigo');
         document.getElementsByClassName("tdt-control-copyright tdt-control")[0].style.display = 'none';
 
+        var countries = [];
+        var countriesOverlay = new T.D3Overlay(init,redraw);
+
+        let that = this;
+        d3.json("https://geo.datav.aliyun.com/areas_v3/bound/330108.json", function (data) {
+          countries = data.features;
+          that.map.addOverLay(countriesOverlay)
+          countriesOverlay.bringToBack();
+          countriesOverlay.bringToBack();
+        });
+
+        function init(sel, transform) {
+          let upd = sel.selectAll('path.geojson').data(countries);
+          upd.enter()
+            .append('path')
+            .attr("class", "geojson")
+            .attr('stroke', 'red')
+            .attr('stroke-width', function (d) {
+              return 5
+            })
+            .attr('fill', function (d, i) {
+              return d3.hsl(Math.random() * 360, 0.9, 0.5)
+            })
+            .attr('fill-opacity', '0')
+        }
+
+        function redraw(sel, transform) {
+          sel.selectAll('path.geojson').each(
+            function (d, i) {
+              d3.select(this).attr('d', transform.pathFromGeojson)
+                .on("mouseover",function(){
+                  console.log('这是点击了',);
+                })
+            }
+          )
+
+        }
+
       },
       mapPoint(type){
         //创建图片对象
-        this.map.clearOverLays();
+        // this.map.clearOverLays();
         var icon01 = new T.Icon({
           iconUrl: point05,
           iconSize: new T.Point(32, 38),
@@ -411,29 +558,16 @@
 </script>
 <style lang="scss" scoped>
   @import './../../../styles/variables.scss';
-  .dashboard-video-player {
-    position: absolute;
-    width: 900px;
-    height: 600px;
-    background: #000;
-    top: 50%;
-    left: 50%;
-    z-index:999;
-    margin-left: -450px;
-    margin-top: -300px;
 
-    .video-js {
-      height: 100%;
-      width: 100%;
-    }
-  }
   .dashboard-video-player-box {
     position: fixed;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background-color: rgba(50, 50, 50, 0.2);
+    /*width: 100vw;*/
+    /*height: 100vh;*/
+    /*width: 450px;*/
+    /*height: 320px;*/
+    top: 20px;
+    left: 20px;
+    background-color: rgba(50, 50, 50, 0.8);
     z-index: 9999;
 
     .el-icon-error {
@@ -452,15 +586,19 @@
     }
 
     .dashboard-video-player {
-      position: absolute;
-      width: 900px;
-      height: 600px;
-      background: #fff;
-      top: 50%;
-      left: 50%;
-      margin-left: -450px;
-      margin-top: -300px;
-      z-index:999;
+      /*position: absolute;*/
+      /*width: 900px;*/
+      /*height: 600px;*/
+      /*width: 450px;*/
+      /*height: 300px;*/
+      /*background: #fff;*/
+      /*<!--top: 50%;-->*/
+      /*<!--left: 50%;-->*/
+      /*margin-left: -450px;*/
+      /*margin-top: -300px;*/
+      /*top: 0;*/
+      /*left: 0;*/
+      /*z-index:999;*/
       .video-js {
         height: 100%;
         width: 100%;
