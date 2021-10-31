@@ -125,6 +125,7 @@
     </div>
     <my-dialog :visible.sync="dialogVisible"
                title="查看图片"
+               width="80%"
                :append-to-body="true">
       <img width="100%"
            :src="dialogImageUrl"

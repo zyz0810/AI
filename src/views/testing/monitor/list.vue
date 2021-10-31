@@ -152,41 +152,12 @@
       window.handleCase = this.handleCase;
       window.handleVideo = this.handleVideo;
       window.closeVideoDialog = this.handleVideoClose;
-      window.handleDrag = this.handleDrag;
-
       // this.$once('hook:beforeDestroy', () => {
       //   this.player.dispose();
       // })
       this.initPlayer()
     },
     methods: {
-      handleDrag(el){
-        console.log(el)
-        console.log('拖拽')
-        let dragBox = el; //获取当前元素
-        // let dragBox = el.querySelector('.my_drag')
-        dragBox.onmousedown = e => {
-          console.log(e.clientY)
-          console.log(dragBox.clientY)
-          //算出鼠标相对元素的位置
-          let disX = e.clientX - dragBox.offsetLeft;
-          let disY = e.clientY - dragBox.offsetTop;
-          document.onmousemove = e => {
-            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-            let left = e.clientX - disX;
-            let top = e.clientY - disY;
-            //移动当前元素
-            dragBox.style.left = left + "px";
-            dragBox.style.top = top + "px";
-          };
-          document.onmouseup = e => {
-            //鼠标弹起来的时候不再移动
-            document.onmousemove = null;
-            //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
-            document.onmouseup = null;
-          };
-        };
-      },
       handleVideoClose(id) {
         // this.player.dispose()
         $('#myVideo'+id).remove()
@@ -194,7 +165,6 @@
         console.log('#myVideo'+id)
         console.log('#myVideoContent'+id)
         console.log($('#dashboardVideoPlayer').children().length)
-
         if($('#dashboardVideoPlayer').children().length < 1){
           this.player.dispose()
           $('#dashboardVideoPlayer').html('')
@@ -376,7 +346,7 @@
         // this.playVideo('https://vd3.bdstatic.com/mda-mi6yu6w39518uykg/cae_h264/1631056499817188563/mda-mi6yu6w39518uykg.mp4',txt);
         getNowurl({camera_index_code:txt.index_code,protocol:'hls'}).then(res=>{
           this.showVideoDialog = true;
-          this.playVideo(res.data.data.url);
+          this.playVideo(res.data.data.url,txt);
         });
       },
       getHistory(txt){
@@ -425,9 +395,9 @@
           upd.enter()
             .append('path')
             .attr("class", "geojson")
-            .attr('stroke', 'red')
+            .attr('stroke', '#0c14b8')
             .attr('stroke-width', function (d) {
-              return 5
+              return 2
             })
             .attr('fill', function (d, i) {
               return d3.hsl(Math.random() * 360, 0.9, 0.5)
