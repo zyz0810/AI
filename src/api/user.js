@@ -29,7 +29,7 @@ export function logout(data) {
 // }
 export function getInfo(data) {
   return request({
-    url: `/admin/user/detail`,
+    url: `/admin/user/current`,
     method: 'post',
     data: Qs.stringify(data)
   })
