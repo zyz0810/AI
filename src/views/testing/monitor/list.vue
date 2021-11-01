@@ -46,6 +46,7 @@
 </template>
 
 <script>
+  import wgs84_to_gcj02 from "@/utils/gcj02towgs84";
   import dragDialog from '@/directive/el-drag-dialog'
   import echarts from 'echarts'
   import {pointList, collectList, getNowurl, getHistoryUrl} from '@/api/monitor'
@@ -384,7 +385,14 @@
 
         let that = this;
         d3.json("https://geo.datav.aliyun.com/areas_v3/bound/330108.json", function (data) {
-          countries = data.features;
+          console.log( data.features)
+          // countries = data.features;
+          let a = data.features;
+          let brr = a[0].geometry.coordinates[0][0].map(item=>{
+            return wgs84_to_gcj02(item[0],item[1])
+          })
+          a[0].geometry.coordinates[0][0] = brr
+          countries = a;
           that.map.addOverLay(countriesOverlay)
           countriesOverlay.bringToBack();
           countriesOverlay.bringToBack();
