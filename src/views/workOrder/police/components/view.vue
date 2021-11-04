@@ -95,6 +95,11 @@
                  <el-radio :label="2">重大案件</el-radio>
                </el-radio-group>
              </el-form-item>
+             <el-form-item label="案件去向：" prop="">
+               <el-select v-model="whereabouts" placeholder="请选择" :disabled="true">
+                 <el-option label="基层治理四平台" :value="1"></el-option>
+               </el-select>
+             </el-form-item>
              <el-form-item label="" prop="checked">
                <el-checkbox v-model="checked" :disabled="formData.status != 1">事件去重</el-checkbox>
                <el-button v-waves type="primary" class="ml_20" @click="handleRepeat">重复事件（{{formData.list.length}}）</el-button>
@@ -168,6 +173,7 @@
           children: "parent_list",
           disabled: this.disabledFn,
         },
+        whereabouts:1,
         checked:false,
         repeatData:{},
         videoData:{},
@@ -323,8 +329,21 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,index_code,facility_name, pic_url,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, pic_url,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
+          let is_important;
+          if(res.data.is_important == null){
+            is_important = 1
+          }else{
+            is_important = res.data.is_important
+          }
+          let is_audited;
+          if(res.data.is_audited == null || res.data.is_audited == 0){
+            is_audited = 1
+          }else{
+            is_audited = res.data.is_audited
+          }
+
           console.log(categoryArr);
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
@@ -405,8 +424,20 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
-          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,pic_url,depart_id,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,pic_url,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
+          let is_important;
+          if(res.data.is_important == null){
+            is_important = 1
+          }else{
+            is_important = res.data.is_important
+          }
+          let is_audited;
+          if(res.data.is_audited == null || res.data.is_audited == 0){
+            is_audited = 1
+          }else{
+            is_audited = res.data.is_audited
+          }
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
