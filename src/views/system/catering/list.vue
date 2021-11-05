@@ -19,8 +19,10 @@
        <div class="bg_white p20">
          <p class="chart_title f15 mb_10">今日识别统计</p>
          <div class="flex flex-vertical">
-           <RingChart :chartData="chartDataTwo" :PieChartLegend="PieChartLegend" divwidth="50%" height="28vh"></RingChart>
-           <div class="f18 text-right" style="width: 50%">
+           <div class="flex-item">
+             <RingChart :chartData="chartDataTwo" :PieChartLegend="PieChartLegend" divwidth="100%" height="28vh"></RingChart>
+           </div>
+           <div class="f18 text-right" style="width: 150px;">
              <p><span class="f30 clr_blue bold mr_10">{{totalData.count}}</span>识别总数</p>
              <p><span class="f30 baseColor bold mr_10">{{totalData.isAudited}}</span>审核通过</p>
              <p><span class="f30 baseColor bold mr_10">{{totalData.isNotAudited}}</span>审核不通过</p>
@@ -230,7 +232,7 @@
             {
               name: '访问来源',
               type: 'pie',
-              radius: ['65%', '90%'],
+              radius: ['40%', '65%'],
               avoidLabelOverlap: false,
               // label: {
               //   show: false,
@@ -256,10 +258,10 @@
               labelLine:{
                 normal:{
                   lineStyle: {
-                    color: '#fff'
+                    // color: '#fff'
                   },
-                  length:10,
-                  length2 :35,
+                  length:20,
+                  length2 :15,
                 }
               },
               label :{
@@ -271,10 +273,10 @@
                 position:'outside',
                 textShadowOffsetY :10,
                 align :'right',
-                color:'white',
-                height :60,
-                lineHeight:30,
-                fontSize:'16',
+                // color:'white',
+                height :40,
+                lineHeight:20,
+                fontSize:'14',
                 rich: {
                   a: {
                     verticalAlign:'bottom',
@@ -386,13 +388,13 @@
           //今日识别统计
           this.totalData = res.data.total;
           this.chartDataTwo.series[0].data = [{
-            name:'审核通过',value:res.data.isAudited
+            name:'审核通过',value:res.data.total.isAudited
             // name:'审核通过',value:2
           },{
-            name:'未审核',value:res.data.audited
+            name:'未审核',value:res.data.total.audited
             // name:'未审核',value:44
           },{
-            name:'审核不通过',value:res.data.isNotAudited
+            name:'审核不通过',value:res.data.total.isNotAudited
             // name:'审核不通过',value:6
           }];
           //今日审核趋势分析

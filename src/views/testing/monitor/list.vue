@@ -118,9 +118,9 @@
           page: 1,
           pageSize: 10
         },
-        zoom:12,
-        centerLatitude:'30.20835',//中心纬度
-        centerLongitude:'120.21194',//中心经度
+        zoom:13,
+        centerLatitude:'30.178653',//中心纬度
+        centerLongitude:'120.19519',//中心经度
         activeId:'',
         playVideoUri:'',
         player: null

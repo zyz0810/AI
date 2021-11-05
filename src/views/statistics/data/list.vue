@@ -224,7 +224,7 @@
         // departTree().then(res => {
         //   this.categoryList = this.getTreeData(res.data);
         // });
-        categoryList({page:1,pageSize:99999}).then(res=>{
+        categoryList({page:1,pageSize:99999,class:1}).then(res=>{
           this.categoryList = res.data.data
 
         });

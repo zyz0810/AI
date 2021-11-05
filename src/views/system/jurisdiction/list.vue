@@ -399,7 +399,7 @@
         this.getData();
       },
       getCategory() {
-        categoryList({page:1,pageSize:99999}).then(res=>{
+        categoryList({page:1,pageSize:99999,class:1}).then(res=>{
           this.categoryList = res.data.data
         });
       },
