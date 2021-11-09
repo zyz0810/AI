@@ -107,17 +107,17 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: 'http://114.55.98.237:8021/#/login?redirect=%2Fdashboard',
-    component: Layout,
-    redirect: 'http://114.55.98.237:8021/#/login?redirect=%2Fdashboard',
-    name: '智能车载',
-    meta: {
-      title: '智能车载',
-      icon: 'iconfont icon-xingxing',
-      roles: ['admin'],
-    },
-  },
+  // {
+  //   path: 'http://114.55.98.237:8021/#/login?redirect=%2Fdashboard',
+  //   component: Layout,
+  //   redirect: 'http://114.55.98.237:8021/#/login?redirect=%2Fdashboard',
+  //   name: '智能车载',
+  //   meta: {
+  //     title: '智能车载',
+  //     icon: 'iconfont icon-xingxing',
+  //     roles: ['admin'],
+  //   },
+  // },
   {
     path: '/workOrder',
     component: Layout,
