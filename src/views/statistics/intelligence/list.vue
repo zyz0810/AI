@@ -158,7 +158,7 @@
           disabled: false,
         },
         categoryList:[],
-        displayType:'table',
+        displayType:'imgList',
         showViewDialog:false,
         viewData:{},
         total: 0,

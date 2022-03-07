@@ -233,6 +233,7 @@
       },
     },
     mounted() {
+      // this.formData.id = this.$route.query.id;
       this.onLoad();
       this.getView();
       this.getCategory();
@@ -344,7 +345,14 @@
             is_audited = res.data.is_audited
           }
 
-          console.log(categoryArr);
+          // let query = this.$route.query;
+          // let path = this.$route.path;
+          // this.$route.replace({ path, query: {id:id,status:status}});
+
+
+          let query = this.$router.history.current.query
+          let path = this.$router.history.current.path
+          this.$router.replace({ path, query: {id:id,status:status} });
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,pic_url,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
@@ -402,7 +410,6 @@
         });
       },
       getHistory(){
-        console.log(this.formData)
         getHistoryUrl({
           camera_index_code:this.formData.index_code,
           start_time:this.$moment(this.formData.collect_time).format('YYYY-MM-DD HH:mm:ss'),
@@ -421,6 +428,7 @@
 
       getView(){
         collectDetail({id:this.$route.query.id}).then(res=>{
+        // collectDetail({id:this.formData.id}).then(res=>{
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,pic_url,list}
           // this.mapPoint();
@@ -449,16 +457,13 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.paraLoading = true;
-            console.log( this.temp);
             this.temp.id = this.formData.id;
             // let name =  this.categoryList.filter(item=>{
             //   if(item.id == this.temp.category_big){
             //     return item;
             //   }
             // });
-            // console.log(name)
             // this.temp.category_big_name = name[0].name;
-            console.log(this.temp)
             let temp = JSON.parse(JSON.stringify(this.temp))
             let form;
             // temp.category_big = temp.category_small[temp.category_small.length - 1]
@@ -478,7 +483,6 @@
                 this.paraLoading = false
               },1000)
               if(res.code == 1) {
-                console.log(1111)
                 this.getView();
                 this.$message({
                   message: res.message,

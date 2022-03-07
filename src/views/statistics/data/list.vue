@@ -129,7 +129,7 @@
           children: "parent_list",
           disabled: false,
         },
-        displayType:'table',
+        displayType:'imgList',
         categoryList:[],
 
         updateBtn: true,

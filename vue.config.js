@@ -40,31 +40,36 @@ module.exports = {
     proxy:{
       '/api':{
         // target:'http://erp.susongzhijia.com',
-        target:'http://10.32.49.115:8081',
+        // target:'http://10.32.49.115:8081',
+        target:'http://10.32.49.122:8082',
+        // http://47.98.38.192:8088
         changeOrigin: true,
         // pathRewrite:{
         //   '^/api':'/api'
         // }
       },
       '/admin':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
+        target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/job':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
+        target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/ai':{
-        target:'http://erp.susongzhijia.com',
+        // target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
+        target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''

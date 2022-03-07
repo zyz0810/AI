@@ -118,7 +118,7 @@
           children: "parent_list",
           disabled: false,
         },
-        displayType:'table',
+        displayType:'imgList',
         updateBtn: true,
         enableBtn: true,
         disableBtn: true,
