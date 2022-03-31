@@ -16,7 +16,7 @@
           <ul class="img_list w100 bg_white">
             <li v-for="(item,index) in list" :key="index" class="mb_20" @click="handleView(item)">
               <div class="img_list_top clr_white">
-                <img class="img_list_img" :src="item.alarmOriginalPic">
+                <img class="img_list_img" :src="item.alarm_original_pic">
                 <span class="block f14 type_tag">{{item.category_big_name}}</span>
                 <!--//事件状态-->
                 <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>

@@ -11,7 +11,7 @@
         <ul class="img_list flex" v-show="tabIndex == 0">
           <li style="width: auto;">
             <div class="img_list_top clr_white">
-              <img class="img_list_img" :src="formData.alarmOriginalPic" style="width: auto; cursor: pointer;" @click="handleImg(formData.alarmOriginalPic)">
+              <img class="img_list_img" :src="formData.alarm_original_pic" style="width: auto; cursor: pointer;" @click="handleImg(formData.alarm_original_pic)">
               <span class="block f15 type_tag">{{formData.category_big_name}}</span>
               <p class="f15 time">{{$moment(formData.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
             </div>
@@ -198,10 +198,10 @@
           depart_id:'',
           index_code:'',
           // install_place:'',
-          // alarmOriginalPic:'',
+          // alarm_original_pic:'',
           images:'',
           list:[],
-          alarmOriginalPic:'',
+          alarm_original_pic:'',
         },
         tabIndex:0,
         paraLoading:false,
@@ -330,7 +330,7 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,index_code,facility_name, alarmOriginalPic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, alarm_original_pic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){
@@ -353,7 +353,7 @@
           let query = this.$router.history.current.query
           let path = this.$router.history.current.path
           this.$router.replace({ path, query: {id:id,status:status} });
-          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarmOriginalPic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarm_original_pic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
           this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
         });
@@ -429,10 +429,10 @@
       getView(){
         collectDetail({id:this.$route.query.id}).then(res=>{
         // collectDetail({id:this.formData.id}).then(res=>{
-          // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarmOriginalPic,list} = res.data
-          // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarmOriginalPic,list}
+          // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list} = res.data
+          // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list}
           // this.mapPoint();
-          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarmOriginalPic,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarm_original_pic,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){
@@ -446,7 +446,7 @@
           }else{
             is_audited = res.data.is_audited
           }
-          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarmOriginalPic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
+          this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarm_original_pic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
           this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
           this.mapPoint();
           // this.getHistory();
