@@ -33,6 +33,7 @@
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
+        <el-button type="primary" icon="iconfont el-icon-s-promotion" @click="handlePush">批量推送</el-button>
         <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
@@ -65,33 +66,41 @@
           </template>
         </el-table-column>
       </el-table>
-
+      <el-checkbox-group v-model="rowInfo" @change="handleSelected">
       <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
-        <li v-for="(item,index) in list" :key="index">
-          <div class="img_list_top clr_white">
-            <img class="img_list_img" :src="item.alarm_original_pic">
-            <span class="block f14 type_tag">{{item.category_big_name}}</span>
-            <!--//事件状态-->
-            <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
-          </div>
-          <div class="weui-cell f14">
-            <div class="weui-cell__bd">
-              <p>报警点位：</p>
-              <p class="overflow_three mr_10">{{item.address}}</p>
-            </div>
-            <div class="weui-cell__ft">
-              <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
-            </div>
-          </div>
-          <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
-            <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
-          </div>
-        </li>
+            <li v-for="(item,index) in list" :key="index">
+              <el-checkbox :label="item">
+              <div class="img_list_top clr_white">
+                <img class="img_list_img" :src="item.alarm_original_pic">
+                <span class="block f14 type_tag">{{item.category_big_name}}</span>
+                <!--//事件状态-->
+                <p class="f14 time">{{$moment(item.collect_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
+              </div>
+              <div class="weui-cell f14">
+                <div class="weui-cell__bd">
+                  <p>报警点位：</p>
+                  <p class="overflow_three mr_10">{{item.address}}</p>
+                </div>
+                <div class="weui-cell__ft">
+                  <span class="block baseColor bold state_type">{{item.status | filtersStatus}}</span>
+                </div>
+              </div>
+              <div class="flex text-center img_list_operation f14 clr_white bold">
+                <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
+                <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
+              </div>
+              </el-checkbox>
+            </li>
+
+
+
+
       </ul>
+      </el-checkbox-group>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
+    <batchPush :showDialog.sync="showPushDialog" :pushData="pushData"></batchPush>
   </div>
 </template>
 
@@ -102,12 +111,14 @@
   import { mapState } from 'vuex'
   import Pagination from "@/components/Pagination/index";
   import {departTree} from "@/api/category"; // waves directive
+  import batchPush from "./components/batchPush"; // waves directive
   export default {
     name: 'policeList',
     directives: {waves},
     components: {
       draggable,
       Pagination,
+      batchPush
     },
     data() {
       return {
@@ -135,7 +146,10 @@
           page: 1,
           pageSize: 10
         },
-        tableHeight:'100'
+        tableHeight:'100',
+        showPushDialog: false,
+        pushData:{},
+        rowInfo:[],
       }
     },
     filters: {
@@ -202,6 +216,18 @@
       this.getCategory();
     },
     methods: {
+      handlePush(){
+        this.showPushDialog = true
+      },
+      handleSelected(val){
+        this.rowInfo = val;
+        this.$refs['tableList'].clearSelection();
+        if(val.length > 0){
+          val.forEach(row=>{
+            this.$refs['tableList'].toggleRowSelection(row,true)
+          })
+        }
+      },
       changeCategory(val){
         this.listQuery.category_big = val[0];
         this.listQuery.category_small = val[1];

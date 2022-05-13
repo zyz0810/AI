@@ -31,7 +31,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     port: port,
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
@@ -39,9 +39,9 @@ module.exports = {
     // before: require('./mock/mock-server.js'),
     proxy:{
       '/api':{
-        // target:'http://erp.susongzhijia.com',
+        target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
-        target:'http://10.32.49.122:8082',
+        // target:'http://10.32.49.122:8082',
         // http://47.98.38.192:8088
         changeOrigin: true,
         // pathRewrite:{
@@ -49,27 +49,27 @@ module.exports = {
         // }
       },
       '/admin':{
-        // target:'http://erp.susongzhijia.com',
+        target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
-        target:'http://10.32.49.122:8082',
+        // target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/job':{
-        // target:'http://erp.susongzhijia.com',
+        target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
-        target:'http://10.32.49.122:8082',
+        // target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''
         // }
       },
       '/ai':{
-        // target:'http://erp.susongzhijia.com',
+        target:'http://erp.susongzhijia.com',
         // target:'http://10.32.49.115:8081',
-        target:'http://10.32.49.122:8082',
+        // target:'http://10.32.49.122:8082',
         changeOrigin: true,
         // pathRewrite:{
         //   '/keynote/api':''

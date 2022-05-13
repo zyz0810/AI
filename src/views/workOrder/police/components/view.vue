@@ -95,9 +95,12 @@
                  <el-radio :label="2">重大案件</el-radio>
                </el-radio-group>
              </el-form-item>
-             <el-form-item label="案件去向：" prop="">
-               <el-select v-model="whereabouts" placeholder="请选择" :disabled="true">
-                 <el-option label="基层治理四平台" :value="1"></el-option>
+             <el-form-item label="案件去向：" prop="whereabouts">
+               <el-select v-model="whereabouts" placeholder="请选择" :disabled="formData.status != 1">
+<!--                 <el-option label="基层治理四平台" :value="1"></el-option>-->
+<!--                 “指挥平台”“一网统管”-->
+                 <el-option label="指挥平台" :value="1"></el-option>
+                 <el-option label="一网统管" :value="2"></el-option>
                </el-select>
              </el-form-item>
              <el-form-item label="" prop="checked">
