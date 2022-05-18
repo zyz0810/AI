@@ -91,8 +91,8 @@
             </div>
           </div>
           <div class="flex text-center img_list_operation f14 clr_white bold">
-            <div class="flex-item" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
-            <div class="flex-item"><i class="iconfont icon-daochu"></i>导出</div>
+            <div class="flex-item pointer" @click="handleView(item)"><i class="iconfont icon-shenhe"></i>审核</div>
+            <div class="flex-item pointer"><i class="iconfont icon-daochu"></i>导出</div>
           </div>
         </li>
       </ul>
