@@ -217,7 +217,7 @@
           remark: '',
           is_important:1,
           ids:'',
-          platform:1,
+          platform:0,
         },
         rules: {
           category_big: [{ required: true, message: '请选择类别', trigger: 'change' }],
