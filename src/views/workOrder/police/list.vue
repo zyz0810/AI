@@ -33,7 +33,7 @@
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
-        <el-button type="primary" icon="iconfont el-icon-s-promotion" @click="handlePush">批量推送</el-button>
+        <el-button type="primary" icon="el-icon-s-promotion f16" @click="handlePush">批量推送</el-button>
         <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
@@ -100,7 +100,7 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
-    <batchPush :showDialog.sync="showPushDialog" :pushData="pushData"></batchPush>
+    <batchPush :showDialog.sync="showPushDialog" :pushData="pushData" @insertList="getList"></batchPush>
   </div>
 </template>
 
@@ -217,7 +217,14 @@
     },
     methods: {
       handlePush(){
-        this.showPushDialog = true
+        if(this.rowInfo.length<1){
+          this.$alert('请选择要推送的数据', '提示', {
+            confirmButtonText: '确定',
+          });
+        }else{
+          this.showPushDialog = true;
+          this.pushData = {ids:this.rowInfo.map(item => item.id)};
+        }
       },
       handleSelected(val){
         this.rowInfo = val;

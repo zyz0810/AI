@@ -95,10 +95,11 @@
                  <el-radio :label="2">重大案件</el-radio>
                </el-radio-group>
              </el-form-item>
-             <el-form-item label="案件去向：" prop="whereabouts">
-               <el-select v-model="whereabouts" placeholder="请选择" :disabled="formData.status != 1">
+             <el-form-item label="案件去向：" prop="platform">
+               <el-select v-model="temp.platform" placeholder="请选择" :disabled="formData.status != 1">
 <!--                 <el-option label="基层治理四平台" :value="1"></el-option>-->
 <!--                 “指挥平台”“一网统管”-->
+                 <el-option label="请选择" :value="0"></el-option>
                  <el-option label="指挥平台" :value="1"></el-option>
                  <el-option label="一网统管" :value="2"></el-option>
                </el-select>
@@ -176,7 +177,6 @@
           children: "parent_list",
           disabled: this.disabledFn,
         },
-        whereabouts:1,
         checked:false,
         repeatData:{},
         videoData:{},
@@ -216,7 +216,8 @@
           category_small:'',
           remark: '',
           is_important:1,
-          ids:''
+          ids:'',
+          platform:1,
         },
         rules: {
           category_big: [{ required: true, message: '请选择类别', trigger: 'change' }],
@@ -333,7 +334,7 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,index_code,facility_name, alarm_original_pic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, alarm_original_pic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark,platform} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){
@@ -357,7 +358,7 @@
           let path = this.$router.history.current.path
           this.$router.replace({ path, query: {id:id,status:status} });
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarm_original_pic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,is_audited,remark,is_important,categoryArr};
-          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
+          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr,platform};
           this.mapPoint();
         });
         this.$nextTick(function () {
@@ -435,7 +436,7 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list}
           // this.mapPoint();
-          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarm_original_pic,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarm_original_pic,depart_id,community_id_name,address, latitude,longitude,images,list,remark,platform} = res.data;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){
@@ -450,7 +451,7 @@
             is_audited = res.data.is_audited
           }
           this.formData = { id,category_big_name,status,index_code,facility_name, depart_id,alarm_original_pic,collect_time,finished_time,community_id_name,address, latitude,longitude,images,list,};
-          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr};
+          this.temp = {is_audited,remark,is_important,category_big:res.data.category_big,category_small:res.data.category_small,categoryArr,platform};
           this.mapPoint();
           // this.getHistory();
         });
@@ -475,11 +476,11 @@
               if(this.formData.list.length > 0){
                 temp.ids = this.formData.list.join(',')
               }
-              const {id,status,category_big,category_small,remark,is_important,ids,is_audited} = temp;
-              form = {id,status,category_big,category_small,remark,is_important,ids,is_audited}
+              const {id,status,category_big,category_small,remark,is_important,ids,is_audited,platform} = temp;
+              form = {id:[id],status,category_big,category_small,remark,is_important,ids,is_audited,platform}
             }else{
-              const {id,status,category_big,category_small,remark,is_important,is_audited} = temp;
-              form = {id,status,category_big,category_small,remark,is_important,is_audited}
+              const {id,status,category_big,category_small,remark,is_important,is_audited,platform} = temp;
+              form = {id:[id],status,category_big,category_small,remark,is_important,is_audited,platform}
             }
             collectEdit(form).then((res) => {
               setTimeout(()=>{

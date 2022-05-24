@@ -149,3 +149,17 @@ export function getHistoryUrl(data) {
     data: Qs.stringify(data)
   })
 }
+/* 重复案件列表
+ * pageSize 分页结束位置
+ * page  分页起始位置
+ * category_big
+ * category_small
+ * facility_id
+ */
+export function repetList(data) {
+  return request({
+    url:'/ai/case_collect/repet',
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}

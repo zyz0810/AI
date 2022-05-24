@@ -105,7 +105,7 @@
 </template>
 
 <script>
-  import {categoryList, collectList,} from '@/api/monitor'
+  import {categoryList, collectList,repetList} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import { mapState } from 'vuex'
@@ -251,7 +251,7 @@
         this.getList()
       },
       getList() {
-        collectList(this.listQuery).then(res => {
+        repetList(this.listQuery).then(res => {
           this.list = res.data.data
           this.total = res.data.total
         });

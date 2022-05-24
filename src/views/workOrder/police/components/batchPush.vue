@@ -22,10 +22,11 @@
           <el-radio :label="2">重大案件</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="案件去向：" prop="whereabouts">
-        <el-select v-model="temp.whereabouts" placeholder="请选择">
+      <el-form-item label="案件去向：" prop="platform">
+        <el-select v-model="temp.platform" placeholder="请选择">
           <!--                 <el-option label="基层治理四平台" :value="1"></el-option>-->
           <!--                 “指挥平台”“一网统管”-->
+          <el-option label="请选择" :value="0"></el-option>
           <el-option label="指挥平台" :value="1"></el-option>
           <el-option label="一网统管" :value="2"></el-option>
         </el-select>
@@ -40,7 +41,7 @@
 </template>
 
 <script>
-  import {collectList, } from '@/api/monitor'
+  import {collectEdit, collectList,} from '@/api/monitor'
   import draggable from 'vuedraggable'
   import waves from '@/directive/waves'
   import Pagination from "@/components/Pagination/index"; // waves directive
@@ -49,7 +50,6 @@
     directives: { waves },
     components: {
       draggable,
-      Pagination
     },
     props: {
       showDialog: {
@@ -61,14 +61,15 @@
         required: true,
         type: Object,
         default: {
-          list: []
+          ids: []
         }
       }
     },
     data() {
       return {
         temp: {
-          whereabouts:'',
+          id:[],
+          platform:0,
           is_audited:'',
           is_important:'',
         },
@@ -91,33 +92,49 @@
     methods: {
       open(){
         // this.getList();
+        console.log(this.pushData)
+        this.temp= {
+          id:[],
+            platform:0,
+            is_audited:'',
+            is_important:'',
+        };
       },
-      close(){},
+      close(){
+        this.temp= {
+          id:[],
+          platform:0,
+          is_audited:'',
+          is_important:'',
+        };
+        this.showViewDialog = false;
+      },
 
       save() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.paraLoading = true
-            const tempData = Object.assign({}, this.temp);
-            this.$delete(tempData,'createTime')
-            this.$delete(tempData,'updateTime')
-            paraValueUpdate(tempData).then((res) => {
+            this.paraLoading = true;
+            this.temp.id = this.pushData.ids;
+            let temp = JSON.parse(JSON.stringify(this.temp))
+            let form;
+            const {id,is_important,is_audited,platform} = temp;
+            form = {id,is_important,is_audited,platform}
+            collectEdit(form).then((res) => {
               setTimeout(()=>{
                 this.paraLoading = false
               },1000)
-              if(res.resp_code == 0) {
-                // const index = this.list.findIndex(v => v.id === this.temp.id);
-                // this.list.splice(index, 1, res.data);
-                this.getList();
-                this.dialogFormVisible = false;
+              if(res.code == 1) {
+                this.$emit('insertList')
                 this.$message({
-                  message: '修改成功',
+                  message: res.message,
                   type: 'success'
                 });
+                this.showViewDialog = false;
               }
             }).catch(() => {
               this.paraLoading = false;
             });
+
           }
         })
       },
