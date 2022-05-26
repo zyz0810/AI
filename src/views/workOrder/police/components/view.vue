@@ -99,7 +99,7 @@
                <el-select v-model="temp.platform" placeholder="请选择" :disabled="formData.status != 1">
 <!--                 <el-option label="基层治理四平台" :value="1"></el-option>-->
 <!--                 “指挥平台”“一网统管”-->
-                 <el-option label="请选择" :value="0"></el-option>
+<!--                 <el-option label="请选择" :value="0"></el-option>-->
                  <el-option label="指挥平台" :value="1"></el-option>
                  <el-option label="一网统管" :value="2"></el-option>
                </el-select>
@@ -217,10 +217,11 @@
           remark: '',
           is_important:1,
           ids:'',
-          platform:0,
+          platform:1,
         },
         rules: {
           category_big: [{ required: true, message: '请选择类别', trigger: 'change' }],
+          platform: [{ required: true, message: '请选择案件去向', trigger: 'change' }],
         },
         categoryList:[],
         playVideoUri:'',
@@ -242,8 +243,12 @@
       this.getView();
       this.getCategory();
       window.closeVideoDialog = () => {
-        this.handleVideoClose()
+        this.handleVideoClose();
       }
+
+      this.$nextTick(()=>{
+        this.$refs['dataForm'].clearValidate();
+      });
 
       // this.$once('hook:beforeDestroy', () => {
       //   this.player.dispose();
@@ -334,7 +339,8 @@
       getCase(val){
         // type 1 升序 0 降序
         nextDetailCollect({id:this.formData.id,type:val,}).then(res=>{
-          const { id,category_big_name,status,index_code,facility_name, alarm_original_pic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark,platform} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, alarm_original_pic,collect_time,finished_time,depart_id,community_id_name,address, latitude,longitude,images,list,remark,} = res.data;
+          let platform = res.data.platform == 0 ?'':res.data.platform;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){
@@ -436,7 +442,8 @@
           // const { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list} = res.data
           // this.formData = { intelligent_type_name, create_time,camera_name, latitude,longitude,install_place,alarm_original_pic,list}
           // this.mapPoint();
-          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarm_original_pic,depart_id,community_id_name,address, latitude,longitude,images,list,remark,platform} = res.data;
+          const { id,category_big_name,status,index_code,facility_name, collect_time,finished_time,alarm_original_pic,depart_id,community_id_name,address, latitude,longitude,images,list,remark} = res.data;
+          let platform = res.data.platform == 0 ?'':res.data.platform;
           let categoryArr = [Number(res.data.category_big),Number(res.data.category_small)];
           let is_important;
           if(res.data.is_important == null){

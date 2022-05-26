@@ -26,7 +26,7 @@
         <el-select v-model="temp.platform" placeholder="请选择">
           <!--                 <el-option label="基层治理四平台" :value="1"></el-option>-->
           <!--                 “指挥平台”“一网统管”-->
-          <el-option label="请选择" :value="0"></el-option>
+<!--          <el-option label="请选择" :value="0"></el-option>-->
           <el-option label="指挥平台" :value="1"></el-option>
           <el-option label="一网统管" :value="2"></el-option>
         </el-select>
@@ -69,12 +69,12 @@
       return {
         temp: {
           id:[],
-          platform:0,
+          platform:'',
           is_audited:'',
-          is_important:'',
+          is_important:1,
         },
         rules: {
-          name: [{ required: true, message: '请输入名称', trigger: 'change' }],
+          platform: [{ required: true, message: '请选择案件去向', trigger: 'change' }],
         },
       }
     },
@@ -91,23 +91,23 @@
 
     methods: {
       open(){
-        // this.getList();
-        console.log(this.pushData)
         this.temp= {
           id:[],
-            platform:0,
-            is_audited:'',
-            is_important:'',
+          platform:'',
+          is_audited:'',
+          is_important:1,
         };
+        this.$refs['dataForm'].clearValidate()
       },
       close(){
         this.temp= {
           id:[],
-          platform:0,
+          platform:'',
           is_audited:'',
-          is_important:'',
+          is_important:1,
         };
         this.showViewDialog = false;
+        this.$refs['dataForm'].clearValidate()
       },
 
       save() {
