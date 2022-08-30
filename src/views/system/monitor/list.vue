@@ -85,6 +85,7 @@
         </el-table>
       </div>
     </div>
+    <a v-show="false" :href="downLoadUrl" id="fileDownload"></a>
   </div>
 </template>
 
@@ -115,6 +116,7 @@
         },
         tableHeight:'100',
         listData:{},
+        downLoadUrl:'',
       }
     },
     filters: {
@@ -168,7 +170,13 @@
       this.getList();
     },
     methods: {
-      handleExport(){},
+      getUrl(){
+        this.downLoadUrl= this.global.domainName + 'ai/Export/earlyWarning?start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time;
+      },
+      async handleExport(){
+        await this.getUrl();
+        document.getElementById("fileDownload").click();
+      },
       handleClick(val){
         this.activeIndex = val;
       },

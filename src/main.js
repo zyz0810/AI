@@ -33,6 +33,8 @@ import moment from 'moment'
 Vue.prototype.$moment = moment
 
 Vue.use(commonComponents)
+import constant from './utils/const.js'
+Vue.use(constant);
 Vue.use(VueQuillEditor)
 Vue.use(directive)
 Vue.use(Element, {

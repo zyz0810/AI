@@ -31,7 +31,7 @@
     </div>
     <div class="p20 bg_white">
       <div class="mb_10">
-        <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
+        <el-button type="primary" icon="iconfont icon-daochu1" @click="handleExport">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
         <el-button type="primary" icon="el-icon-s-promotion f16" @click="handlePush">批量推送</el-button>
         <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
@@ -62,7 +62,7 @@
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
             <i class="iconfont icon-xiangqing baseColor inlineBlock" @click.stop="handleView(scope.row)"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click.stop="handleExport"></i>
+            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click.stop=""></i>
           </template>
         </el-table-column>
       </el-table>
@@ -101,6 +101,7 @@
                   @pagination="getList" class="text-right"/>
     </div>
     <batchPush :showDialog.sync="showPushDialog" :pushData="pushData" @insertList="getList"></batchPush>
+    <a v-show="false" :href="downLoadUrl" id="fileDownload"></a>
   </div>
 </template>
 
@@ -150,6 +151,7 @@
         showPushDialog: false,
         pushData:{},
         rowInfo:[],
+        downLoadUrl:'',
       }
     },
     filters: {
@@ -216,6 +218,14 @@
       this.getCategory();
     },
     methods: {
+      getUrl(){
+        this.downLoadUrl= this.global.domainName + 'ai/Export/collectList?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
+          +'&category_big='+this.listQuery.category_big + '&category_small='+this.listQuery.category_small + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
+      },
+      async handleExport(){
+        await this.getUrl();
+        document.getElementById("fileDownload").click();
+      },
       handlePush(){
         if(this.rowInfo.length<1){
           this.$alert('请选择要推送的数据', '提示', {
@@ -280,7 +290,6 @@
         this.$refs.tableList.toggleRowSelection(row)
       },
       handleSelectionChange(val) {
-        console.log(val)
         this.rowInfo = val;
         if (val.length == 1) {
           this.updateBtn = false
@@ -303,8 +312,6 @@
       handleView(row){
         this.$router.push({path:'/workOrder/policeView',query: {id:row.id,status:row.status}})
       },
-      handleExport(){},
-
     }
   }
 </script>

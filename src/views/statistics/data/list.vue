@@ -38,7 +38,7 @@
     </div>
     <div class="p20 bg_white">
       <div class="mb_10">
-        <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
+        <el-button type="primary" icon="iconfont icon-daochu1" @click="handleExport">导出信息</el-button>
         <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
         <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/></div>
       </div>
@@ -68,7 +68,7 @@
           <template slot-scope="scope">
             <!--            <el-button class="filter-item" type="primary" @click="handleView">详情</el-button>-->
             <i class="iconfont icon-xiangqing baseColor inlineBlock" @click="handleView(scope.row)"></i>
-            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click="handleExport"></i>
+            <i class="iconfont icon-daochufffpx baseColor inlineBlock ml_10" @click=""></i>
           </template>
         </el-table-column>
       </el-table>
@@ -100,7 +100,7 @@
                   @pagination="getList" class="text-right"/>
     </div>
 
-
+    <a v-show="false" :href="downLoadUrl" id="fileDownload"></a>
   </div>
 </template>
 
@@ -148,7 +148,8 @@
           page: 1,
           pageSize: 10
         },
-        tableHeight:'100'
+        tableHeight:'100',
+        downLoadUrl:'',
       }
     },
     filters: {
@@ -216,6 +217,16 @@
       this.getCategory();
     },
     methods: {
+      // 导出
+      getUrl(){
+        this.downLoadUrl= this.global.domainName + 'ai/Export/repet?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
+          +'&facility_name='+this.listQuery.facility_name + '&category_big='+this.listQuery.category_big
+          + '&category_small='+this.listQuery.category_small + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
+      },
+      async handleExport(){
+        await this.getUrl();
+        document.getElementById("fileDownload").click();
+      },
       changeCategory(val){
         this.listQuery.category_big = val[0];
         this.listQuery.category_small = val[1];
@@ -270,7 +281,6 @@
         this.$refs.tableList.toggleRowSelection(row)
       },
       handleSelectionChange(val) {
-        console.log(val)
         this.rowInfo = val;
         if (val.length == 1) {
           this.updateBtn = false
@@ -296,8 +306,6 @@
         this.$router.push({path:'/statistics/dataView',query: {id:row.id,status:row.status}})
       },
 
-      // 导出
-      handleExport(){},
 
 
     }

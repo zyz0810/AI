@@ -12,7 +12,7 @@
     </div>
     <div class="p20 bg_white">
       <div class="mb_10">
-        <el-button type="primary" icon="iconfont icon-daochu1" @click="">导出信息</el-button>
+        <el-button type="primary" icon="iconfont icon-daochu1" @click="handleExport">导出信息</el-button>
       </div>
       <el-table v-loading="listLoading" :data="list" :height="tableHeight"
                 element-loading-text="拼命加载中" fit ref="tableList" @row-click="clickRow" @selection-change="handleSelectionChange">
@@ -39,6 +39,7 @@
                   @pagination="getList" class="text-right"/>
     </div>
     <paraView :showDialog.sync="showViewDialog" :viewData="viewData"></paraView>
+    <a v-show="false" :href="downLoadUrl" id="fileDownload"></a>
   </div>
 </template>
 
@@ -73,7 +74,8 @@
           page: 1,
           pageSize: 10
         },
-        tableHeight:'100'
+        tableHeight:'100',
+        downLoadUrl:'',
       }
     },
     filters: {
@@ -115,7 +117,15 @@
       this.getList();
     },
     methods: {
-
+      // 导出
+      getUrl(){
+        this.downLoadUrl= this.global.domainName + 'ai/Export/pointList?type='+this.listQuery.type+'&name='+this.listQuery.name
+          + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
+      },
+      async handleExport(){
+        await this.getUrl();
+        document.getElementById("fileDownload").click();
+      },
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()
@@ -130,7 +140,6 @@
         this.$refs.tableList.toggleRowSelection(row)
       },
       handleSelectionChange(val) {
-        console.log(val)
         this.rowInfo = val;
         if (val.length == 1) {
           this.updateBtn = false
