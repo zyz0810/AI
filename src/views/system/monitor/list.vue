@@ -40,7 +40,7 @@
 
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport('1')">导出</el-button>
         </div>
         <el-table v-loading="listLoading" :data="listData.point" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
                   element-loading-text="拼命加载中" fit ref="tableList">
@@ -52,7 +52,7 @@
     <div v-show="activeIndex == 1">
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport('2')">导出</el-button>
         </div>
         <el-table v-loading="listLoading" :data="listData.category" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
                   element-loading-text="拼命加载中" fit ref="tableList">
@@ -64,7 +64,7 @@
     <div v-show="activeIndex == 2">
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport('3')">导出</el-button>
         </div>
         <el-table v-loading="listLoading" :data="listData.audited" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
                   element-loading-text="拼命加载中" fit ref="tableList">
@@ -76,7 +76,7 @@
     <div v-show="activeIndex == 3">
       <div class="bg_white p20">
         <div class="mb_20">
-          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport">导出</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-notebook-2" @click="handleExport('4')">导出</el-button>
         </div>
         <el-table v-loading="listLoading" :data="listData.source" :header-cell-style="{background:'rgb(241,246,252)'}" :height="tableHeight"
                   element-loading-text="拼命加载中" fit ref="tableList">
@@ -170,11 +170,11 @@
       this.getList();
     },
     methods: {
-      getUrl(){
-        this.downLoadUrl= this.global.domainName + 'ai/Export/earlyWarning?start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time;
+      getUrl(val){
+        this.downLoadUrl= this.global.domainName + 'admin/Export/earlyWarning?start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time+'&type='+val;
       },
-      async handleExport(){
-        await this.getUrl();
+      async handleExport(val){
+        await this.getUrl(val);
         document.getElementById("fileDownload").click();
       },
       handleClick(val){

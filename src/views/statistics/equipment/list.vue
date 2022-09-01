@@ -119,7 +119,7 @@
     methods: {
       // 导出
       getUrl(){
-        this.downLoadUrl= this.global.domainName + 'ai/Export/pointList?type='+this.listQuery.type+'&name='+this.listQuery.name
+        this.downLoadUrl= this.global.domainName + 'admin/Export/pointList?type='+this.listQuery.type+'&name='+this.listQuery.name
           + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
       },
       async handleExport(){

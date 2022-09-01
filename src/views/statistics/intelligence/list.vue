@@ -53,7 +53,7 @@
     <div class="p20 bg_white">
       <div class="mb_10">
         <el-button type="primary" icon="iconfont icon-daochu1" @click="handleExport">导出信息</el-button>
-        <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>
+<!--        <el-button type="primary" plain icon="iconfont icon-xiazai" @click="">下载图片</el-button>-->
         <div class="fr" @click="displayType = displayType == 'table'?'imgList':'table'"><img src="./../../../assets/image/display_icon.png"/> </div>
       </div>
       <el-table v-loading="listLoading" :data="list" v-show="displayType=='table'" :height="tableHeight"
@@ -315,7 +315,7 @@
       },
       // 导出
       getUrl(){
-        this.downLoadUrl= this.global.domainName + 'ai/Export/collectList?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
+        this.downLoadUrl= this.global.domainName + 'admin/Export/caseCollect?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
           +'&facility_name='+this.listQuery.facility_name + '&category_big='+this.listQuery.category_big
           + '&category_small='+this.listQuery.category_small + '&is_audited='+this.listQuery.is_audited + '&is_important='+this.listQuery.is_important
           + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
