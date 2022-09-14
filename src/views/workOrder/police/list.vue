@@ -66,7 +66,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-checkbox-group v-model="rowInfo" @change="handleSelected">
+      <el-checkbox-group v-model="rowInfo" @change="handleSelected" v-if="list.length>0">
       <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
             <li v-for="(item,index) in list" :key="index">
               <el-checkbox :label="item">
@@ -96,7 +96,9 @@
 
 
       </ul>
+
       </el-checkbox-group>
+      <p class="gray01 text-center mt_50" v-else>暂无数据</p>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
@@ -140,8 +142,8 @@
         categoryList:[],
         listQuery: {
           status : 1,
-          start_time: '',
-          end_time:'',
+          start_time:  this.$moment(new Date().getTime() - 24 * 7 * 60 * 60 * 1000).format('YYYY-MM-DD 00:00:00'),
+          end_time:this.$moment().format('YYYY-MM-DD HH:mm:ss'),
           category_big:'',
           category_small:'',
           page: 1,
@@ -220,7 +222,7 @@
     methods: {
       getUrl(){
         this.downLoadUrl= this.global.domainName + 'admin/Export/caseCollect?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
-          +'&category_big='+this.listQuery.category_big + '&category_small='+this.listQuery.category_small + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
+          +'&category_big='+this.listQuery.category_big + '&category_small='+this.listQuery.category_small;
       },
       async handleExport(){
         await this.getUrl();

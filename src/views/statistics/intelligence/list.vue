@@ -102,7 +102,7 @@
         </el-table-column>
       </el-table>
 
-      <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'">
+      <ul class="img_list flex" :style="{height:tableHeight+'px'}" v-if="displayType=='imgList'&&list.length>0">
         <li v-for="(item,index) in list" :key="index">
           <div class="img_list_top clr_white">
             <img class="img_list_img" :src="item.alarm_original_pic">
@@ -125,6 +125,7 @@
           </div>
         </li>
       </ul>
+      <p class="gray01 text-center mt_50" v-if="list.length<1">暂无数据</p>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize"
                   @pagination="getList" class="text-right"/>
     </div>
@@ -167,8 +168,10 @@
         listLoading: false,
         listQuery: {
           status:'',
-          start_time:'',
-          end_time:'',
+          // start_time:'',
+          // end_time:'',
+          start_time:  this.$moment(new Date().getTime() - 24 * 7 * 60 * 60 * 1000).format('YYYY-MM-DD 00:00:00'),
+          end_time:this.$moment().format('YYYY-MM-DD HH:mm:ss'),
           facility_name:'',
           category_big:'',
           category_small:'',
@@ -317,8 +320,7 @@
       getUrl(){
         this.downLoadUrl= this.global.domainName + 'admin/Export/caseCollect?status='+this.listQuery.status+'&start_time='+this.listQuery.start_time+'&end_time='+this.listQuery.end_time
           +'&facility_name='+this.listQuery.facility_name + '&category_big='+this.listQuery.category_big
-          + '&category_small='+this.listQuery.category_small + '&is_audited='+this.listQuery.is_audited + '&is_important='+this.listQuery.is_important
-          + '&page='+this.listQuery.page + '&pageSize='+this.listQuery.pageSize;
+          + '&category_small='+this.listQuery.category_small + '&is_audited='+this.listQuery.is_audited + '&is_important='+this.listQuery.is_important;
       },
       async handleExport(){
         await this.getUrl();
