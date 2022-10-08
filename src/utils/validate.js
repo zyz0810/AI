@@ -204,7 +204,27 @@ export function isPassword(rule, value, callback) {
     }
   }
 }
-
+/*密码需包含大小写字母、数字、特殊符号*/
+export function isPasswordTwo(rule, value, callback) {
+  const reg = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*,\._\+(){}])[0-9a-zA-Z!@#$%^&*,\\._\+(){}]{8,20}$/;
+  if (value == '' || value == undefined || value == null) {
+    callback();
+  } else {
+    if(value.length<8 && reg.test(value)){
+      callback(new Error('提示：密码需包含大小写字母、数字、特殊符号等8位以上'));
+    }else if(value.length<8 && !reg.test(value)){
+      callback(new Error('提示：密码需包含大小写字母、数字、特殊符号等8位以上'));
+    }else if(value.length>12 && reg.test(value)){
+      callback(new Error('提示：密码需包含大小写字母、数字、特殊符号等8位以上'));
+    }else{
+      if (!reg.test(value)) {
+        callback(new Error('提示：密码需包含大小写字母、数字、特殊符号等8位以上'));
+      } else {
+        callback();
+      }
+    }
+  }
+}
 /*自动检验数值的范围*/
 export function checkMax20000(rule, value, callback) {
   if (value == '' || value == undefined || value == null) {

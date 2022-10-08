@@ -21,6 +21,13 @@ export function logout(data) {
     data: Qs.stringify(data)
   })
 }
+export function updatePassword(data) {
+  return request({
+    url: `/admin/user/updatePassword`,
+    method: 'post',
+    data: Qs.stringify(data)
+  })
+}
 // export function getInfo(account_id) {
 //   return request({
 //     url: `/api/account/${account_id}/permissions`,

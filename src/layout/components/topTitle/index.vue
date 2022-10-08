@@ -58,7 +58,7 @@
 
 
           <!--<div class="m_r30 ml_20" @click="updatePassword">  <i class="el-icon-menu f20 bold"></i></div>-->
-          <div class="avatar-wrapper clr_white ml_20 flex flex-vertical">
+          <div class="avatar-wrapper clr_white ml_20 flex flex-vertical cursor" @click="handlePassword">
             <!--<img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
             <img :src="headImg" class="user-avatar" />
             <span style="margin: 0 5px; font-size: 14px; display: inline-block;">{{name}}</span>
@@ -68,23 +68,69 @@
           <a class="ml_20 clr_white" href="/jsc/index.html#/dashboard" style="line-height: 20px;"><i class="el-icon-s-promotion bold f20 fl" style="margin: 0 5px"></i> 回首页</a>
           <span class="clr_white ml_30" style="line-height: 20px;" @click="logout">退 出<i class="el-icon-switch-button f20 fr" style="margin-left: 5px"></i></span>
         </div>
-        <my-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="80%">
-          <ul class="street">
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-            <li>街道1</li>
-          </ul>
-          <div slot="footer" class="dialog-footer" v-if="dialogStatus != 'updatePassword'">
+<!--        <my-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="80%">-->
+<!--          <ul class="street">-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--            <li>街道1</li>-->
+<!--          </ul>-->
+<!--          <div slot="footer" class="dialog-footer" v-if="dialogStatus != 'updatePassword'">-->
+<!--            <el-button @click="dialogFormVisible = false">取 消</el-button>-->
+<!--            <el-button type="primary" @click="updateData()">确 定</el-button>-->
+<!--          </div>-->
+<!--        </my-dialog>-->
+        <el-dialog title="修改密码" :visible.sync="dialogFormVisible">
+          <el-form
+            ref="dataForm"
+            :rules="rules"
+            :model="passwordTemp"
+            label-width="120px"
+            style="width: 500px; margin-left: 50px"
+          >
+            <el-form-item label="用户名">{{name}}</el-form-item>
+            <el-form-item label="原密码" prop="old_password">
+              <el-input
+                v-model="passwordTemp.old_password"
+                placeholder="请输入原密码"
+                type="password"
+                :show-password="true"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item label="新密码" prop="new_password">
+              <el-input
+                v-model="passwordTemp.new_password"
+                placeholder="请输入新密码"
+                type="password"
+                :show-password="true"
+                autocomplete="off"
+              />
+              <!--              <p class="red01 f12" style="line-height: 1;">提示：密码需包含大小写字母、数字、特殊符号等8位以上</p>-->
+            </el-form-item>
+            <el-form-item label="请重复密码" prop="confirm_password">
+              <el-input
+                v-model="passwordTemp.confirm_password"
+                placeholder="请重复密码"
+                type="password"
+                :show-password="true"
+                autocomplete="off"
+              />
+            </el-form-item>
+          </el-form>
+          <div
+            slot="footer"
+            class="dialog-footer"
+          >
             <el-button @click="dialogFormVisible = false">取 消</el-button>
             <el-button type="primary" @click="updateData()">确 定</el-button>
           </div>
-        </my-dialog>
+        </el-dialog>
       </el-col>
     </el-row>
   </el-header>
@@ -101,12 +147,21 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import headImg from '@/assets/headImg/img.png'
 import { getToken, setToken, removeToken,getId,setId,removeId,getName,setName,removeName,getMobile,getCity,setCitySelected,getCitySelected } from '@/utils/auth'
-import { validUsername, validatePhone,isPassword } from "@/utils/validate";
-import {updatePassword} from '@/api/user'
+import { validUsername, validatePhone,isPassword,isPasswordTwo } from "@/utils/validate";
 import {getSmsCode} from "@/api/code";
+  import {getInfo, updatePassword} from '@/api/user'
 export default {
   name: 'topTitle',
   data() {
+    var validatePass2 = (rule,value,callback)=>{
+      if(value == ''){
+        callback(new Error('请再次输入密码'));
+      }else if(value !== this.passwordTemp.new_password){
+        callback(new Error('与新密码不一致'));
+      }else{
+        callback();
+      }
+    }
     return {
       // citySelected:Number(getCitySelected()),
       headImg: headImg,
@@ -123,25 +178,28 @@ export default {
       },
       // cityList:getCity(),
       rules:{
-        password: [
-          { required: true, message: "请输入密码", trigger: "change" },{validator: isPassword}
+        old_password: [
+          { required: true, message: "请输入原密码", trigger: "change" }
         ],
-        mobile: [
-          { required: true, message: "请输入手机号码", trigger: "change" },
-          { validator: validatePhone }
+        new_password: [
+          { required: true, message: "请输入新密码", trigger: "change" },{validator: isPasswordTwo}
         ],
-        verifyCode: [
-          { required: true, message: "请输入验证码", trigger: "change" }
-        ],
-        confirmPassword: [
-          { required: true, message: "请再次输入密码", trigger: "change" },{validator: isPassword}
+        // mobile: [
+        //   { required: true, message: "请输入手机号码", trigger: "change" },
+        //   { validator: validatePhone }
+        // ],
+        // verifyCode: [
+        //   { required: true, message: "请输入验证码", trigger: "change" }
+        // ],
+        confirm_password: [
+          { required: true, message: "请再次输入密码", trigger: "change" },{validator: validatePass2}
         ]
       },
       passwordTemp:{
-        confirmPassword:'',
-        mobile:getMobile(),
-        password:'',
-        verifyCode:''
+        id:'',
+        old_password: "",
+        new_password: "",
+        confirm_password:'',
       },
       codeTxt: "获取验证码",
       disabled:false
@@ -167,6 +225,19 @@ export default {
     }),
   },
   methods: {
+    handlePassword(){
+
+      getInfo().then(res => {
+        this.resetPasswordTemp()
+        this.dialogFormVisible = true;
+        this.passwordTemp.id=res.data.id;
+        this.$nextTick(() => {
+          this.$refs['dataForm'].clearValidate()
+        })
+      })
+
+
+    },
     // chooseCity(val){
     //   this.citySelected = val;
     //   setCitySelected(val);
@@ -176,10 +247,10 @@ export default {
     updateCity(){},
     resetPasswordTemp(){
       this. passwordTemp={
-        confirmPassword:'',
-        mobile:getMobile(),
-        password:'',
-        verifyCode:''
+        id:'',
+        old_password: "",
+        new_password: "",
+        confirm_password:'',
       }
     },
     getCode() {
@@ -239,8 +310,9 @@ export default {
     updateData(){
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          updatePassword(this.passwordTemp).then((res) => {
-            if(res.resp_code == 0){
+          const {id,old_password,new_password} = this.passwordTemp;
+          updatePassword({id,old_password,new_password}).then((res) => {
+            if(res.code == 1){
               this.dialogFormVisible = false;
               this.$message({
                 message: '密码重置成功',
