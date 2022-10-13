@@ -142,8 +142,8 @@
         categoryList:[],
         listQuery: {
           status : 1,
-          start_time:  this.$moment(new Date().getTime() - 24 * 7 * 60 * 60 * 1000).format('YYYY-MM-DD 00:00:00'),
-          end_time:this.$moment().format('YYYY-MM-DD HH:mm:ss'),
+          start_time:  this.$moment(new Date().getTime() - 24 * 7 * 60 * 60 * 1000).format('YYYY-MM-DD'),
+          end_time:this.$moment().format('YYYY-MM-DD'),
           category_big:'',
           category_small:'',
           page: 1,
