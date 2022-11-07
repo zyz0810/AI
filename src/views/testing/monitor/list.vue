@@ -360,7 +360,7 @@
         });
       },
       getPoint(){
-        pointList({type:'allList',class:1}).then(res=>{
+        pointList({type:'allList',class:1,status:1}).then(res=>{
           this.pointList = res.data;
           this.mapPoint('point')
         });
